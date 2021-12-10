@@ -19,7 +19,7 @@ dbSql = databaseConnection.cursor();
 
 # create tables:
 
-dbSql.execute("CREATE TABLE movie(id INTEGER PRIMARY KEY, title TEXT NOT NULL)")
+dbSql.execute("CREATE TABLE movie(id INTEGER PRIMARY KEY, title TEXT NOT NULL, overview TEXT DEFAULT NULL, image TEXT DEFAULT NULL)")
 dbSql.execute("CREATE TABLE genre(id INTEGER PRIMARY KEY, genre TEXT UNIQUE NOT NULL)")
 dbSql.execute("CREATE TABLE movieGenres(id INTEGER PRIMARY KEY, id_movie INTEGER NOT NULL, id_genre INTEGER NOT NULL, FOREIGN KEY(id_movie) REFERENCES movie(id), FOREIGN KEY(id_genre) REFERENCES genre(id))")
 
