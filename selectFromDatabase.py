@@ -36,17 +36,23 @@ dbSql = databaseConnection.cursor();
 
 # SELECT id and titles of movies from genre ... that have at least a rating of ...
 
-genre = "Crime"
-rating = 5.0
+# genre = "Crime"
+# rating = 5.0
+#
+# movieTitle = dbSql.execute('''
+#     SELECT movie.id, movie.title FROM movie INNER JOIN movieGenres INNER JOIN genre INNER JOIN rating
+#         on movie.id = movieGenres.id_movie
+#         and movieGenres.id_genre = genre.id
+#         and movie.id = rating.id_movie
+#         and genre.genre = ?
+#         and rating.rating >= ?
+# ''', (genre, rating,)).fetchall()
+# print(movieTitle)
+# print("Found " + str(len(movieTitle)) + " Results")
 
-movieTitle = dbSql.execute('''
-    SELECT movie.id, movie.title FROM movie INNER JOIN movieGenres INNER JOIN genre INNER JOIN rating
-        on movie.id = movieGenres.id_movie
-        and movieGenres.id_genre = genre.id
-        and movie.id = rating.id_movie
-        and genre.genre = ?
-        and rating.rating >= ?
-''', (genre, rating,)).fetchall()
+# SELECT * from movies
+
+movieTitle = dbSql.execute('''SELECT * FROM movie WHERE id=1''').fetchall()
 print(movieTitle)
 print("Found " + str(len(movieTitle)) + " Results")
 
