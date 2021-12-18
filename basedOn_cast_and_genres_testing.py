@@ -18,7 +18,7 @@ dbSql = databaseConnection.cursor();
 
 #getting data for content bases recommendation (id, title, description)
 #movies = dbSql.execute('''SELECT movie.id, movie.title, movie.overview FROM movie where movie.overview NOT NULL limit 50''').fetchall()
-movies = dbSql.execute('''SELECT movie.id, movie.title, movie.overview FROM movie where movie.overview NOT NULL ORDER BY movie.id ASC''').fetchall()
+movies = dbSql.execute('''SELECT movie.id, movie.title, movie.overview FROM movie where movie.overview NOT NULL''').fetchall()
 movies = np.array(movies)
 # print(movies[:,2])
 
