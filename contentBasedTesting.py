@@ -4,11 +4,9 @@
 
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
-from sklearn.metrics import mean_squared_error
-from sklearn.model_selection import train_test_split
+from sklearn.metrics.pairwise import linear_kernel
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.feature_extraction.text import CountVectorizer
-from sklearn.metrics.pairwise import linear_kernel
 import sqlite3
 import re
 
