@@ -8,7 +8,8 @@ from sklearn.metrics.pairwise import linear_kernel
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.feature_extraction.text import CountVectorizer
 import sqlite3
-import re
+import matplotlib.pyplot as plt
+
 
 database = "database/test.db"
 databaseConnection = sqlite3.connect(database)
@@ -21,7 +22,17 @@ movies = np.array(movies)
 # print(movies[:,2])
 
 
-def getSimilarity(similarity_matrix, movieID):
+def getSimilarity(wordVector, movieID):
+    overview_matrix = wordVector.fit_transform(movies[:,2].tolist())
+
+    #Not sure whihc one is better
+    similarity_matrix = cosine_similarity(overview_matrix, overview_matrix)
+    #similarity_matrix = linear_kernel(overview_matrix,overview_matrix)
+
+    # plt.imshow(similarity_matrix);
+    # plt.colorbar()
+    # plt.show()
+
     #get similarity values with other movies
     #similarity_score is the list of index and similarity matrix
     similarity_score = list(enumerate(similarity_matrix[movieID]))
@@ -34,23 +45,14 @@ def getSimilarity(similarity_matrix, movieID):
     return similarMovies
 
 def tfidfTesting(movieID, movies=movies):
-    #creating ...
     tfidf = TfidfVectorizer(stop_words='english')
-    #Construct the required TF-IDF matrix by applying the fit_transform method on the overview field of the movies
-    overview_matrix = tfidf.fit_transform(movies[:,2].tolist())
-    #Output the shape of tfidf_matrix
-    # print(f"{overview_matrix.shape}")
-    similarity_matrix = linear_kernel(overview_matrix,overview_matrix)
-    # print(similarity_matrix)
-    return getSimilarity(similarity_matrix, movieID)
+    return getSimilarity(tfidf, movieID)
 
 
 #Count vectorizer testing
 def cvTesting(movieID, movies=movies):
     cv = CountVectorizer(stop_words='english');
-    overview_matrix = cv.fit_transform(movies[:,2].tolist())
-    cosine_sim = cosine_similarity(overview_matrix, overview_matrix)
-    return getSimilarity(cosine_sim, movieID)
+    return getSimilarity(cv, movieID)
 
 
 print(movies[:,1][0:20])
@@ -67,3 +69,5 @@ similarMovies = cvTesting(forId)[1:10]
 print("Similar movies for: " + movies[forId][1])
 for id in similarMovies:
     print(movies[id][1])
+
+databaseConnection.close()
