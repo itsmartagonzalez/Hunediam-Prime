@@ -35,6 +35,7 @@ svd = sp.SVD(verbose=True, n_epochs=10)
 fullTrainset = spData.build_full_trainset()
 svd.fit(fullTrainset)
 
+# save model to file:
 with open(filenameOfModel, 'wb') as svdModel:
     pickle.dump(svd, svdModel)
 

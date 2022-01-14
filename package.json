@@ -1,0 +1,23 @@
+{
+  "name": "Hunediam-Prime",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/itsmartagonzalez/Hunediam-Prime.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/itsmartagonzalez/Hunediam-Prime/issues"
+  },
+  "homepage": "https://github.com/itsmartagonzalez/Hunediam-Prime#readme",
+  "dependencies": {
+    "electron": "^16.0.7"
+  }
+}
