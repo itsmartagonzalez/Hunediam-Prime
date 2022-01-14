@@ -13,6 +13,9 @@ import pandas as pd
 import sqlite3
 import matplotlib.pyplot as plt
 import surprise as sp
+import pickle
+
+filenameOfModel = 'svd_test_trained_data.sav'
 
 database = "database/test.db"
 databaseConnection = sqlite3.connect(database)
@@ -31,6 +34,15 @@ svd = sp.SVD(verbose=True, n_epochs=10)
 # Full Dataset:
 fullTrainset = spData.build_full_trainset()
 svd.fit(fullTrainset)
+
+with open(filenameOfModel, 'wb') as svdModel:
+    pickle.dump(svd, svdModel)
+
+svd = False
+
+# load saved model:
+with open(filenameOfModel, 'rb') as svdModel:
+    svd = pickle.load(svdModel)
 
 def generateEstimatedRatingData(user_id, model):
     for curMovieID in ratings['id_movie']:
