@@ -19,5 +19,8 @@
   "homepage": "https://github.com/itsmartagonzalez/Hunediam-Prime#readme",
   "dependencies": {
     "electron": "^16.0.7"
+  },
+  "devDependencies": {
+    "python-shell": "^3.0.1"
   }
 }
