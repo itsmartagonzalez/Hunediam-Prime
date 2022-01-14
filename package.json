@@ -21,6 +21,5 @@
     "electron": "^16.0.7"
   },
   "devDependencies": {
-    "python-shell": "^3.0.1"
   }
 }
