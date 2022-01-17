@@ -1,5 +1,5 @@
-const runPython = (program, arguments, callback) => {
 
+const runPython = (program, arguments, callback) => {
   let programToRun = [program, ...arguments];
   const python = require('child_process').spawn('python', programToRun);
   python.stdout.on('data',function(data){
@@ -13,4 +13,4 @@ const infoPrint = (info) => {
   alert(info);
 }
 
-runPython('./getMovieData.py', ['1', '2'], infoPrint);
+runPython('./websitePythonScripts/getMovieData.py', ['1', '2'], infoPrint);

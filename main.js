@@ -1,15 +1,15 @@
-const runPython = (program, arguments, callback) => {
-  let programToRun = [program, ...arguments];
-  const python = require('child_process').spawn('python', programToRun);
-  python.stdout.on('data',function(data){
-    //console.log("data: ",data.toString('utf8'));
-    callback(data.toString('utf8'));
-  });
-}
-
-const infoPrint = (info) => {
-  console.log(info);
-}
+// const runPython = (program, arguments, callback) => {
+//   let programToRun = [program, ...arguments];
+//   const python = require('child_process').spawn('python', programToRun);
+//   python.stdout.on('data',function(data){
+//     //console.log("data: ",data.toString('utf8'));
+//     callback(data.toString('utf8'));
+//   });
+// }
+//
+// const infoPrint = (info) => {
+//   console.log(info);
+// }
 
 // Modules to control application life and create native browser window
 const {app, BrowserWindow} = require('electron')
@@ -30,7 +30,7 @@ function createWindow () {
   // and load the index.html of the app.
   mainWindow.loadFile('index.html')
 
-  runPython('./getMovieData.py', ['1', '2'], infoPrint);
+  //runPython('./getMovieData.py', ['1', '2'], infoPrint);
 
   // Open the DevTools.
   // mainWindow.webContents.openDevTools()
