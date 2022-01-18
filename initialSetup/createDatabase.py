@@ -8,8 +8,8 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-def createDatabaseForMovieData(database, movieFile = "../data/movies.csv",
-        ratingFile = "../data/ratings.csv"):
+def createDatabaseForMovieData(database, movieFile = "data/movies.csv",
+        ratingFile = "data/ratings.csv"):
 
     # connection to database
     databaseConnection = sqlite3.connect(database)
@@ -22,6 +22,7 @@ def createDatabaseForMovieData(database, movieFile = "../data/movies.csv",
         id INTEGER PRIMARY KEY,
         title TEXT NOT NULL,
         overview TEXT DEFAULT NULL,
+        genres TEXT DEFAULT NULL,
         image TEXT DEFAULT NULL)''')
     dbSql.execute('''CREATE TABLE contentBasedSimilar(
         id INTEGER PRIMARY KEY,
@@ -66,6 +67,7 @@ def createDatabaseForMovieData(database, movieFile = "../data/movies.csv",
         movieData = re.sub(r'[^\x00-\x7f]',r' ', movies.read())
         movieData = movieData.splitlines()
         genres = set();
+        allGenres = [];
         cleanMovieData = []
 
         # insert movies:
@@ -74,19 +76,25 @@ def createDatabaseForMovieData(database, movieFile = "../data/movies.csv",
             if len(curLine) > 3:
                 curLine = [curLine[0], ','.join(curLine[1:len(curLine)-1]).strip('"'), curLine[len(curLine)-1]]
             cleanMovieData.append([curLine[0], curLine[1], curLine[2].split('|')])
+
             genres.update([genre for genre in curLine[2].split('|')])
+            
+            allGenres.append(" ".join(curLine[2].split('|')))
 
         # insert genres:
         for genre in genres:
             dbSql.execute("INSERT INTO genre(genre) VALUES(?)", (genre,))
 
+        i = 0;
         for movie in cleanMovieData:
             # insert movies and create relationship between movies and genres
-            dbSql.execute("INSERT INTO movie(id, title) VALUES(?,?)", (int(movie[0]), movie[1],))
+            dbSql.execute("INSERT INTO movie(id, title, genres) VALUES(?,?,?)", (int(movie[0]), movie[1], allGenres[i]))
             for genre in movie[2]:
                 genreId = dbSql.execute("SELECT id FROM genre WHERE genre=?", (genre,)).fetchall()
                 if len(genreId) > 0:
                     dbSql.execute("INSERT INTO movieGenres(id_movie, id_genre) VALUES(?,?)", (int(movie[0]), int(genreId[0][0]),))
+            i += 1
+
 
     # Insert rating data:
 
@@ -113,4 +121,4 @@ def createDatabaseForMovieData(database, movieFile = "../data/movies.csv",
 if __name__ == '__main__':
     logging.basicConfig(level=logging.ERROR)
     logger.debug('In main of createDatabas.py')
-    createDatabaseForMovieData("../database/test2.db")
+    createDatabaseForMovieData("database/test2.db")

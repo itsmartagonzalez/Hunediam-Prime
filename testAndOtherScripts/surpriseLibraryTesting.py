@@ -15,9 +15,9 @@ import matplotlib.pyplot as plt
 import surprise as sp
 import pickle
 
-filenameOfModel = '../trainedModels/svd_test_trained_data.sav'
+filenameOfModel = 'trainedModels/svd_test_trained_data.sav'
 
-database = "../database/test.db"
+database = "database/test.db"
 databaseConnection = sqlite3.connect(database)
 dbSql = databaseConnection.cursor();
 

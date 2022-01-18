@@ -7,7 +7,7 @@ import re
 
 # Files
 
-database = "../database/test.db"
+database = "database/test2.db"
 
 # connection to database
 
@@ -23,16 +23,21 @@ dbSql = databaseConnection.cursor();
 
 # SELECT titles of movies from genre ...
 
-# genre = "Comedy"
+genre = "Comedy"
 #
-# movieTitle = dbSql.execute('''
-#     SELECT movie.title FROM movie INNER JOIN movieGenres INNER JOIN genre
-#         on movie.id = movieGenres.id_movie
-#         and movieGenres.id_genre = genre.id
-#         and genre.genre = ?
-# ''', (genre,)).fetchall()
-# print(movieTitle)
+#movieTitle = dbSql.execute('''
+#    SELECT * FROM movie INNER JOIN movieGenres INNER JOIN genre
+#        on movie.id = movieGenres.id_movie
+#        and movieGenres.id_genre = genre.id
+#        and genre.genre = ?
+#''', (genre,)).fetchall()
+#print(movieTitle)
 # print("Found " + str(len(movieTitle)) + " Results")
+
+
+movieTitle = dbSql.execute('''SELECT * FROM movie''').fetchall()
+print(movieTitle[0])
+
 
 # SELECT id and titles of movies from genre ... that have at least a rating of ...
 
@@ -52,9 +57,9 @@ dbSql = databaseConnection.cursor();
 
 # SELECT * from movies
 
-movieTitle = dbSql.execute('''SELECT * FROM movie WHERE id=1''').fetchall()
-print(movieTitle)
-print("Found " + str(len(movieTitle)) + " Results")
+# movieTitle = dbSql.execute('''SELECT * FROM movie WHERE id=1''').fetchall()
+# print(movieTitle)
+# print("Found " + str(len(movieTitle)) + " Results")
 
 # closing conection
 databaseConnection.close()

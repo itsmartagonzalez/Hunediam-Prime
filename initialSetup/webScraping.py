@@ -11,8 +11,8 @@ import concurrent.futures
 
 #import thread
 
-database = "../database/test.db"
-linkFile = "../data/links.csv"
+database = "database/test2.db"
+linkFile = "data/links.csv"
 
 databaseConnection = sqlite3.connect(database)
 dbSql = databaseConnection.cursor();
