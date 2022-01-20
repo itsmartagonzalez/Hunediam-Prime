@@ -11,32 +11,19 @@ import sqlite3
 import matplotlib.pyplot as plt
 
 
-database = "database/test2.db"
+database = "database/test.db"
 databaseConnection = sqlite3.connect(database)
 dbSql = databaseConnection.cursor();
 
 #getting data for content bases recommendation (id, title, description)
 #movies = dbSql.execute('''SELECT movie.id, movie.title, movie.overview FROM movie where movie.overview NOT NULL limit 50''').fetchall()
-#movies = dbSql.execute('''SELECT movie.id, movie.title, movie.overview FROM movie where movie.overview NOT NULL ORDER BY movie.id ASC''').fetchall()
-movies = dbSql.execute('''SELECT movie.id, movie.title, movie.genres, movie.overview 
-                            FROM movie where movie.overview NOT NULL or movie.genres NOT NULL
-                            ORDER BY movie.id ASC''').fetchall()
-
+movies = dbSql.execute('''SELECT movie.id, movie.title, movie.overview FROM movie where movie.overview NOT NULL ORDER BY movie.id ASC''').fetchall()
 movies = np.array(movies)
-
-prueba = movies[:,-2:].tolist()
-
-overviewAndGenre = []
-for p in prueba:
-    if p[0] is not None and p[1] is not None:
-        overviewAndGenre.append(" ".join(p))
-
 
 
 
 def getSimilarity(wordVector, movieID):
-    #overview_matrix = wordVector.fit_transform(movies[:,2].tolist())
-    overview_matrix = wordVector.fit_transform(overviewAndGenre)
+    overview_matrix = wordVector.fit_transform(movies[:,2].tolist())
 
     #Not sure whihc one is better
     similarity_matrix = cosine_similarity(overview_matrix, overview_matrix)

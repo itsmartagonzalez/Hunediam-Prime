@@ -14,7 +14,7 @@ def createDatabaseForMovieData(database, movieFile = "data/movies.csv",
     # connection to database
     databaseConnection = sqlite3.connect(database)
 
-    dbSql = databaseConnection.cursor();
+    dbSql = databaseConnection.cursor()
 
     # create tables:
 
@@ -66,8 +66,7 @@ def createDatabaseForMovieData(database, movieFile = "data/movies.csv",
         #Only ASCII will be inserted correctly so we remove other characters
         movieData = re.sub(r'[^\x00-\x7f]',r' ', movies.read())
         movieData = movieData.splitlines()
-        genres = set();
-        allGenres = [];
+        genres = set()
         cleanMovieData = []
 
         # insert movies:
@@ -79,16 +78,15 @@ def createDatabaseForMovieData(database, movieFile = "data/movies.csv",
 
             genres.update([genre for genre in curLine[2].split('|')])
             
-            allGenres.append(" ".join(curLine[2].split('|')))
 
         # insert genres:
         for genre in genres:
             dbSql.execute("INSERT INTO genre(genre) VALUES(?)", (genre,))
 
-        i = 0;
+        i = 0
         for movie in cleanMovieData:
             # insert movies and create relationship between movies and genres
-            dbSql.execute("INSERT INTO movie(id, title, genres) VALUES(?,?,?)", (int(movie[0]), movie[1], allGenres[i]))
+            dbSql.execute("INSERT INTO movie(id, title, genres) VALUES(?,?)", (int(movie[0]), movie[1]))
             for genre in movie[2]:
                 genreId = dbSql.execute("SELECT id FROM genre WHERE genre=?", (genre,)).fetchall()
                 if len(genreId) > 0:

@@ -11,7 +11,7 @@ import concurrent.futures
 
 #import thread
 
-database = "database/test2.db"
+database = "database/test.db"
 linkFile = "data/links.csv"
 
 databaseConnection = sqlite3.connect(database)
