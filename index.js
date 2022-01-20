@@ -1,4 +1,3 @@
-
 const runPython = (program, arguments, callback) => {
   let programToRun = [program, ...arguments];
   const python = require('child_process').spawn('python', programToRun);

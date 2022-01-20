@@ -22,7 +22,6 @@ def createDatabaseForMovieData(database, movieFile = "data/movies.csv",
         id INTEGER PRIMARY KEY,
         title TEXT NOT NULL,
         overview TEXT DEFAULT NULL,
-        genres TEXT DEFAULT NULL,
         image TEXT DEFAULT NULL)''')
     dbSql.execute('''CREATE TABLE contentBasedSimilar(
         id INTEGER PRIMARY KEY,
@@ -49,13 +48,16 @@ def createDatabaseForMovieData(database, movieFile = "data/movies.csv",
         FOREIGN KEY(id_user) REFERENCES user(id),
         FOREIGN KEY(id_movie) REFERENCES movie(id))''')
 
-    dbSql.execute("CREATE TABLE cast(id INTEGER PRIMARY KEY, name TEXT DEFAULT NULL)")
-    dbSql.execute('''CREATE TABLE movieCast(
+    dbSql.execute('''CREATE TABLE actor(
+        id INTEGER PRIMARY KEY,
+        name TEXT DEFAULT NULL)''')
+        
+    dbSql.execute('''CREATE TABLE movieActor(
         id INTEGER PRIMARY KEY,
         id_movie INTEGER NOT NULL,
-        id_cast INTEGER NOT NULL,
+        id_actor INTEGER NOT NULL,
         FOREIGN KEY(id_movie) REFERENCES movie(id),
-        FOREIGN KEY(id_cast) REFERENCES cast(id))''')
+        FOREIGN KEY(id_actor) REFERENCES actor(id))''')
 
     # Insert Data:
     # Insert Movie data:
@@ -86,7 +88,7 @@ def createDatabaseForMovieData(database, movieFile = "data/movies.csv",
         i = 0
         for movie in cleanMovieData:
             # insert movies and create relationship between movies and genres
-            dbSql.execute("INSERT INTO movie(id, title, genres) VALUES(?,?)", (int(movie[0]), movie[1]))
+            dbSql.execute("INSERT INTO movie(id, title) VALUES(?,?)", (int(movie[0]), movie[1]))
             for genre in movie[2]:
                 genreId = dbSql.execute("SELECT id FROM genre WHERE genre=?", (genre,)).fetchall()
                 if len(genreId) > 0:
@@ -119,4 +121,4 @@ def createDatabaseForMovieData(database, movieFile = "data/movies.csv",
 if __name__ == '__main__':
     logging.basicConfig(level=logging.ERROR)
     logger.debug('In main of createDatabas.py')
-    createDatabaseForMovieData("database/test2.db")
+    createDatabaseForMovieData("database/test.db")

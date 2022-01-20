@@ -5,6 +5,7 @@ from bs4 import BeautifulSoup
 import re
 import sqlite3
 import time
+import random
 
 import threading
 import concurrent.futures
@@ -21,51 +22,63 @@ baseLinkImage = 'https://www.themoviedb.org'
 
 # multithread implementation to drasticly improve speed
 # each position contains a dictionary with:
-# {cl: [], overview: overview, imageLink: imageLink, cast: []}
+# {cl: [], overview: overview, imageLink: imageLink, actor: []}
 collectedData = []
+notCollected = []
 
 def CollectDataFor(cl):
     cl = cl.split(',')
     linkToInfo = baseLinkImage + '/movie/' + str(cl[2])
 
-    req = Request(linkToInfo, headers={'User-Agent': 'Mozilla/5.0'})
-    webpage = urlopen(req).read()
+    counter = 0
+    while counter < 10:
+        req = Request(linkToInfo, headers={'User-Agent': 'Mozilla/5.0'})
+        webpage = urlopen(req).read()
 
-    webSoup = BeautifulSoup(webpage, "html.parser")
+        webSoup = BeautifulSoup(webpage, "html.parser")
 
-    overview = webSoup.find_all("div", {"class": "overview"})
-    overview = re.findall(r'<p>(.*?)</p>', str(overview))[0]
+        overview = webSoup.find_all("div", {"class": "overview"})
+        overview = re.findall(r'<p>(.*?)</p>', str(overview))[0]
 
-    imageLink = webSoup.find_all("img", {"class": "poster"})
-    imageLink = baseLinkImage + str(re.findall(r'src="(.*?)"', str(imageLink))[0])
+        imageLink = webSoup.find_all("img", {"class": "poster"})
+        imageLink = baseLinkImage + str(re.findall(r'src="(.*?)"', str(imageLink))[0])
 
-    cast = webSoup.find_all("ol", {"class": "people"})
-    cast = re.findall(r'<p>.*<a.*>(.*?)</a>.*</p>', str(cast))
+        actor = webSoup.find_all("ol", {"class": "people"})
+        actor = re.findall(r'<p>.*<a.*>(.*?)</a>.*</p>', str(actor))
 
-    infoDict = {}
-    infoDict["cl"] = cl
-    infoDict["overview"] = overview
-    infoDict["imageLink"] = imageLink
-    infoDict["cast"] = cast
-    collectedData.append(infoDict)
+        if len(overview) > 10:
+            infoDict = {}
+            infoDict["cl"] = cl
+            infoDict["overview"] = overview
+            infoDict["imageLink"] = imageLink
+            infoDict["actor"] = actor
+            collectedData.append(infoDict)
+        else:
+            #print("Not found. Repeating" + str(counter))
+            counter += 1
+            time.sleep(random.random()*20)
+            if counter == 10:
+                print("CANT FIND DATA FOR: " + linkToInfo)
+
 
 def InsertIntoDatabase():
     while collectedData:
         cData = collectedData.pop(0)
-        for tc in cData["cast"]:
+        print(cData)
+        for tc in cData["actor"]:
             if len(tc) > 1:
-                tcId = dbSql.execute("SELECT id FROM cast WHERE name=?", (tc,)).fetchall()
+                tcId = dbSql.execute("SELECT id FROM actor WHERE name=?", (tc,)).fetchall()
                 if len(tcId) == 0:
-                    dbSql.execute("INSERT INTO cast(name) VALUES(?)", (tc,))
-                tcId = dbSql.execute("SELECT id FROM cast WHERE name=?", (tc,)).fetchall()
-                dbSql.execute("INSERT INTO movieCast(id_movie, id_cast) VALUES(?,?)", (int(cData["cl"][0]), int(tcId[0][0]),))
+                    dbSql.execute("INSERT INTO actor(name) VALUES(?)", (tc,))
+                tcId = dbSql.execute("SELECT id FROM actor WHERE name=?", (tc,)).fetchall()
+                dbSql.execute("INSERT INTO movieActor(id_movie, id_actor) VALUES(?,?)", (int(cData["cl"][0]), int(tcId[0][0]),))
 
         dbSql.execute("UPDATE movie SET overview=?, image=? WHERE id=?", (cData["overview"], cData["imageLink"], int(cData["cl"][0]),))
         cMovie = dbSql.execute("SELECT title, overview FROM movie WHERE id=?", (int(cData["cl"][0]),)).fetchall()
         print("Inserted additional data for movie: ", cMovie[0][0])
 
 
-maxThreads = 10
+maxThreads = 8
 chunkCounter = 0
 
 with open(linkFile, newline='') as cLink:

@@ -11,14 +11,57 @@ import sqlite3
 import matplotlib.pyplot as plt
 
 
-database = "database/test.db"
+database = "../database/test.db"
 databaseConnection = sqlite3.connect(database)
-dbSql = databaseConnection.cursor();
+dbSql = databaseConnection.cursor()
 
 #getting data for content bases recommendation (id, title, description)
 #movies = dbSql.execute('''SELECT movie.id, movie.title, movie.overview FROM movie where movie.overview NOT NULL limit 50''').fetchall()
-movies = dbSql.execute('''SELECT movie.id, movie.title, movie.overview FROM movie where movie.overview NOT NULL ORDER BY movie.id ASC''').fetchall()
+
+#movies = dbSql.execute('''SELECT movie.id, movie.title, movie.overview FROM movie where movie.overview NOT NULL ORDER BY movie.id ASC''').fetchall()
+
+movies = dbSql.execute('''SELECT movie.id, movie.title, movie.overview FROM movie ORDER BY movie.id ASC''').fetchall()
+
+# movies = dbSql.execute('''SELECT movie.id, movie.title, genre.genre, movie.overview 
+#                             FROM movie INNER JOIN movieGenres INNER JOIN genre
+#                             on movie.id = movieGenres.id_movie
+#                             and movieGenres.id_genre = genre.id 
+#                             where genre.genre NOT NULL 
+#                             ORDER BY movie.id ASC''').fetchall()
+
 movies = np.array(movies)
+
+# Adding genre to movies
+for movie in movies:
+    genres = dbSql.execute('''SELECT DISTINCT genre.genre FROM genre INNER JOIN movieGenres INNER JOIN movie
+                                on movie.id = movieGenres.id_movie
+                                and movieGenres.id_genre = genre.id
+                                and movie.id == ?''', (int(movie[0]),)).fetchall()
+    genres = np.array(genres)
+    strConvertedGenres = " "
+    for genre in genres:
+        strConvertedGenres += "-".join(genre[0].split()) + " "
+    if movie[2] is not None:
+        movie[2] += strConvertedGenres
+    else:
+        movie[2] = strConvertedGenres
+
+
+# Adding cast to movie
+for movie in movies:
+    actors = dbSql.execute('''SELECT DISTINCT actor.name FROM actor INNER JOIN movieActor INNER JOIN movie
+                                on movie.id = movieActor.id_movie
+                                and movieActor.id_actor = actor.id
+                                and movie.id == ?''', (int(movie[0]),)).fetchall()
+    actors = np.array(actors)
+    strConvertedActor = ". "
+    for actor in actors:
+        strConvertedActor += "-".join(actor[0].split()) + " "
+    if movie[2] is not None:
+        movie[2] += strConvertedActor
+    else:
+        movie[2] = strConvertedActor
+
 
 
 
@@ -51,13 +94,13 @@ def tfidfTesting(movieID, movies=movies):
 
 #Count vectorizer testing
 def cvTesting(movieID, movies=movies):
-    cv = CountVectorizer(stop_words='english');
+    cv = CountVectorizer(stop_words='english')
     return getSimilarity(cv, movieID)
 
 
 print(movies[:,1][0:20])
 # passing movie id (index) into function to get similar movies
-forId = 1
+forId = 0
 print()
 similarMovies = tfidfTesting(forId)[1:10]
 print("Similar movies for: " + movies[forId][1])

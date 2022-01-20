@@ -7,7 +7,7 @@ import re
 
 # Files
 
-database = "database/test2.db"
+database = "../database/test.db"
 
 # connection to database
 
