@@ -32,43 +32,66 @@ collectedData = []
 notCollected = []
 
 def CollectDataFor(cl):
+    logger.info("Start collecting data for:" + cl)
     cl = cl.split(',')
     linkToInfo = baseLinkImage + '/movie/' + str(cl[2])
 
     counter = 0
+    triedSleep = 1
     while counter < 10:
-        req = Request(linkToInfo, headers={'User-Agent': 'Mozilla/5.0'})
-        webpage = urlopen(req).read()
-
-        webSoup = BeautifulSoup(webpage, "html.parser")
-
-        overview = webSoup.find_all("div", {"class": "overview"})
-        overview = re.findall(r'<p>(.*?)</p>', str(overview))[0]
-
-        imageLink = webSoup.find_all("img", {"class": "poster"})
-        if len(imageLink) > 0:
-            imageLink = baseLinkImage + str(re.findall(r'src="(.*?)"', str(imageLink))[0])
+        req = None
+        webpage = None
+        try:
+            req = Request(linkToInfo, headers={'User-Agent': 'Mozilla/5.0'})
+            webpage = urlopen(req).read()
+        except Exception as e:
+            logger.error("HTTP ERROR OCURED: " + str(e))
+            errorCode = re.findall('\d+', str(e))
+            if len(errorCode) > 0 and int(errorCode[0]) == 429:
+                if triedSleep > 2:
+                    logger.critical("CANT MAKE ANY MORE REQUESTS, EXITING")
+                    databaseConnection.close()
+                    exit(0)
+                triedSleep += 1
+                logger.INFO("To many request trying to sleep for 10 seconds")
+                time.sleep(10*triedSleep)
+                triedSleep = True
+            else:
+                counter = 10
         else:
-            imageLink = None
+            webSoup = BeautifulSoup(webpage, "html.parser")
 
-        actor = webSoup.find_all("ol", {"class": "people"})
-        actor = re.findall(r'<p>.*<a.*>(.*?)</a>.*</p>', str(actor))
+            overview = webSoup.find_all("div", {"class": "overview"})
+            if len(overview) > 0:
+                overview = re.findall(r'<p>(.*?)</p>', str(overview))[0]
+            else:
+                logger.warning("CANT FIND DATA FOR: " + str(cl))
+                return
 
-        if len(overview) > 10:
-            logger.info("Found info for " + str(cl[0]))
-            infoDict = {}
-            infoDict["cl"] = cl
-            infoDict["overview"] = overview
-            infoDict["imageLink"] = imageLink
-            infoDict["actor"] = actor
-            collectedData.append(infoDict)
-            counter = 10
-        else:
-            logger.info("Not found. Repeating id:" + str(cl[0]) + ' - c:' + str(counter))
-            counter += 1
-            time.sleep(random.random()*2)
-            if counter == 10:
-                logger.warning("CANT FIND DATA FOR: " + str(linkToInfo))
+            imageLink = webSoup.find_all("img", {"class": "poster"})
+            if len(imageLink) > 0:
+                imageLink = baseLinkImage + str(re.findall(r'src="(.*?)"', str(imageLink))[0])
+            else:
+                imageLink = None
+
+            actor = webSoup.find_all("ol", {"class": "people"})
+            actor = re.findall(r'<p>.*<a.*>(.*?)</a>.*</p>', str(actor))
+
+            if len(overview) > 10:
+                logger.info("Found info for " + str(cl[0]))
+                infoDict = {}
+                infoDict["cl"] = cl
+                infoDict["overview"] = overview
+                infoDict["imageLink"] = imageLink
+                infoDict["actor"] = actor
+                collectedData.append(infoDict)
+                counter = 10
+            else:
+                logger.info("Not found. Repeating id:" + str(cl[0]) + ' - c:' + str(counter))
+                counter += 1
+                time.sleep(random.random()*2)
+                if counter == 10:
+                    logger.warning("CANT FIND DATA FOR: " + str(linkToInfo))
 
 
 def InsertIntoDatabase():
@@ -95,7 +118,7 @@ def alreadyInDatabase(cl):
         return True
     return False
 
-maxThreads = 10
+maxThreads = 5
 chunkCounter = 0
 moviesLeft = 0
 
@@ -107,27 +130,30 @@ with open(linkFile, newline='') as cLink:
 
     chunks = [moviedbId[x:x+maxThreads] for x in range(0, len(moviedbId), maxThreads)]
 
-    for chunk in chunks:
-        #logger.debug("chunk data:"+str(chunk))
-        i = 0
-        while i < len(chunk):
-            if alreadyInDatabase(chunk[i]):
-                del chunk[i]
-                moviesLeft -= 1
-            else:
-                i += 1
-        if len(chunk) > 0:
-            logger.debug("Still no data:"+str(chunk))
-            if len(chunk) > 1:
-                with concurrent.futures.ThreadPoolExecutor(max_workers=maxThreads) as executor:
-                    executor.map(CollectDataFor, chunk)
-            else:
-                print(chunk[0])
-                CollectDataFor(chunk[0])
-            InsertIntoDatabase()
-            chunkCounter += len(chunk)
-            print("Movies left:", moviesLeft - chunkCounter)
+    try:
+        for chunk in chunks:
+            #logger.debug("chunk data:"+str(chunk))
+            i = 0
+            while i < len(chunk):
+                if alreadyInDatabase(chunk[i]):
+                    del chunk[i]
+                    moviesLeft -= 1
+                else:
+                    i += 1
+            if len(chunk) > 0:
+                logger.debug("Still no data:"+str(chunk))
+                if len(chunk) > 1:
+                    with concurrent.futures.ThreadPoolExecutor(max_workers=maxThreads) as executor:
+                        executor.map(CollectDataFor, chunk)
+                else:
+                    CollectDataFor(chunk[0])
+                InsertIntoDatabase()
+                chunkCounter += len(chunk)
+                print("Movies left:", moviesLeft - chunkCounter)
+    except Exception as e:
+        logger.error("ERROR IN MAIN FUNCTION: " + str(e))
 
-# commiting and closing conection
+#closing conection
+logger.info("Commited to database current changes")
 databaseConnection.commit()
 databaseConnection.close()
