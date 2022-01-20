@@ -22,11 +22,11 @@ dbSql = databaseConnection.cursor()
 
 movies = dbSql.execute('''SELECT movie.id, movie.title, movie.overview FROM movie ORDER BY movie.id ASC''').fetchall()
 
-# movies = dbSql.execute('''SELECT movie.id, movie.title, genre.genre, movie.overview 
+# movies = dbSql.execute('''SELECT movie.id, movie.title, genre.genre, movie.overview
 #                             FROM movie INNER JOIN movieGenres INNER JOIN genre
 #                             on movie.id = movieGenres.id_movie
-#                             and movieGenres.id_genre = genre.id 
-#                             where genre.genre NOT NULL 
+#                             and movieGenres.id_genre = genre.id
+#                             where genre.genre NOT NULL
 #                             ORDER BY movie.id ASC''').fetchall()
 
 movies = np.array(movies)
@@ -107,6 +107,7 @@ print("Similar movies for: " + movies[forId][1])
 for id in similarMovies:
     print(movies[id][1])
 
+forId = 1
 print()
 similarMovies = cvTesting(forId)[1:10]
 print("Similar movies for: " + movies[forId][1])
