@@ -35,8 +35,8 @@ genre = "Comedy"
 # print("Found " + str(len(movieTitle)) + " Results")
 
 
-movieTitle = dbSql.execute('''SELECT * FROM movie''').fetchall()
-print(movieTitle[0])
+movieTitle = dbSql.execute('''SELECT count(*) FROM movie where overview IS NULL''').fetchall()
+print(movieTitle)
 
 
 # SELECT id and titles of movies from genre ... that have at least a rating of ...
