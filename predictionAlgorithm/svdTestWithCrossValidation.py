@@ -14,7 +14,7 @@ import threading
 import concurrent.futures
 
 logger = logging.getLogger(__name__)
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.INFO)
 
 saveObtainedRaitingDataTo = 'splittedData.sav'
 
@@ -39,13 +39,13 @@ with open(saveObtainedRaitingDataTo, 'wb') as spTmp:
 def getInitialDistribution():
     # In implemented version get best from database latest entry
     #nEpochsStep = 5
-    nEpochs = [5, 10, 15]
+    nEpochs = [5, 10, 15, 20, 25, 30]
 
     #lRAllStep = 0.005
-    lRAll = [0.001, 0.005, 0.01]
+    lRAll = [0.001, 0.005, 0.01, 0.02]
 
     #regAllStep = 0.2
-    regAll = [0.2, 0.4, 0.6]
+    regAll = [0.2, 0.4, 0.6, 0.8]
 
     toTest = []
 
@@ -66,7 +66,7 @@ def runExternalProgram(values):
     output = stream.read()
     return output
 
-maxThreads = 4
+maxThreads = 20
 testValues = getInitialDistribution()
 testChunks = [testValues[x:x+maxThreads] for x in range(0, len(testValues), maxThreads)]
 
@@ -88,5 +88,13 @@ for chunk in testChunks:
 logger.info("All Results: "+str(allResults))
 
 os.remove(saveObtainedRaitingDataTo)
+
+bestResult = allResults[0]
+for result in allResults:
+    if result['rmse'] < bestResult['rmse']:
+        bestResult = result
+
+print('Best Result:')
+print(bestResult)
 
 databaseConnection.close()
