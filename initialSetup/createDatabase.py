@@ -51,13 +51,39 @@ def createDatabaseForMovieData(database, movieFile = "data/movies.csv",
     dbSql.execute('''CREATE TABLE actor(
         id INTEGER PRIMARY KEY,
         name TEXT DEFAULT NULL)''')
-        
+
     dbSql.execute('''CREATE TABLE movieActor(
         id INTEGER PRIMARY KEY,
         id_movie INTEGER NOT NULL,
         id_actor INTEGER NOT NULL,
         FOREIGN KEY(id_movie) REFERENCES movie(id),
         FOREIGN KEY(id_actor) REFERENCES actor(id))''')
+
+    # part for svd statistics
+    dbSql.execute('''CREATE TABLE svdTrainBlock(
+        id INTEGER PRIMARY KEY,
+        test_date DATE NOT NULL,
+        min_ratings INTEGER NOT NULL,
+        description TEXT DEFAULT NULL)''')
+    dbSql.execute('''CREATE TABLE svdStatistics(
+        id INTEGER PRIMARY KEY,
+        id_block INTEGER NOT NULL,
+        n_epochs INTEGER NOT NULL,
+        lr_all FLOAT NOT NULL,
+        reg_all FLOAT NOT NULL,
+        rmse FLOAT NOT NULL,
+        mae FLOAT NOT NULL,
+        right_on FLOAT DEFAULT NULL,
+        still_good FLOAT DEFAULT NULL,
+        meh FLOAT DEFAULT NULL,
+        bad FLOAT DEFAULT NULL,
+        FOREIGN KEY(id_block) REFERENCES svdTrainBlock(id))''')
+    dbSql.execute('''CREATE TABLE userStatistics(
+        id INTEGER PRIMARY KEY,
+        id_user INTEGER NOT NULL,
+        id_block INTEGER NOT NULL,
+        FOREIGN KEY(id_block) REFERENCES svdTrainBlock(id),
+        FOREIGN KEY(id_user) REFERENCES user(id))''')
 
     # Insert Data:
     # Insert Movie data:
@@ -79,7 +105,7 @@ def createDatabaseForMovieData(database, movieFile = "data/movies.csv",
             cleanMovieData.append([curLine[0], curLine[1], curLine[2].split('|')])
 
             genres.update([genre for genre in curLine[2].split('|')])
-            
+
 
         # insert genres:
         for genre in genres:

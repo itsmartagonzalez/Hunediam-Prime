@@ -8,17 +8,13 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-def createDatabaseForMovieData(database):
+def createAlgorithmDatabase(database):
 
     # connection to database
     databaseConnection = sqlite3.connect(database)
     dbSql = databaseConnection.cursor()
 
     # create tables:
-
-    dbSql.execute('''CREATE TABLE userStatistics(
-        id INTEGER PRIMARY KEY,
-        amountOfRatings TEXT NOT NULL)''')
     dbSql.execute('''CREATE TABLE svdTrainBlock(
         id INTEGER PRIMARY KEY,
         test_date DATE NOT NULL,
@@ -36,6 +32,13 @@ def createDatabaseForMovieData(database):
         meh FLOAT DEFAULT NULL,
         bad FLOAT DEFAULT NULL,
         FOREIGN KEY(id_block) REFERENCES svdTrainBlock(id))''')
+    dbSql.execute('''CREATE TABLE userStatistics(
+        id INTEGER PRIMARY KEY,
+        id_user INTEGER NOT NULL,
+        id_block INTEGER NOT NULL,
+        amountOfRatings INTEGER DEFAULT NULL,
+        FOREIGN KEY(id_block) REFERENCES svdTrainBlock(id),
+        FOREIGN KEY(id_user) REFERENCES user(id))''')
     # commiting and closing conection
     databaseConnection.commit()
     databaseConnection.close()
@@ -44,4 +47,4 @@ def createDatabaseForMovieData(database):
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO)
     logger.debug('In main of createAlgoritmDatabase.py')
-    createDatabaseForMovieData("database/trainStatistics.db")
+    createAlgorithmDatabase("database/trainStatistics.db")

@@ -54,6 +54,7 @@ def getOwnStatistics(predictions):
     print("Own statistics: ", str(result))
 
 
+
 splittedDataset = sp.model_selection.split.KFold(n_splits=5, random_state=None, shuffle=True)
 svdAlgorithm = sp.SVD(n_epochs=5)
 for trainset, testset in splittedDataset.split(spRatingData):
@@ -66,65 +67,6 @@ for trainset, testset in splittedDataset.split(spRatingData):
     sp.accuracy.rmse(predictions, verbose=True)
     sp.accuracy.mae(predictions, verbose=True)
 
+databaseConnection.close()
 
-
-
-
-
-
-
-
-
-
-
-# Cross Validating:
-# svd = sp.SVD(verbose=True, n_epochs=10)
-
-# # Estimating best values:
-# print('starting grid search...')
 # param_grid = {'n_epochs': [5, 10, 15], 'lr_all': [0.002, 0.005, 0.01, 0.02], 'reg_all': [0.2, 0.4, 0.6]}
-# #paramGrid = {'n_epochs': [1], 'lr_all': [0.002], 'reg_all': [0.4, 0.6]}
-# gridSaerch = GridSearchCV(sp.SVD, paramGrid, measures=['rmse', 'mae'], cv=5)
-# gridSaerch.fit(spRatingData)
-#
-# resultsFromGridSearch = pd.DataFrame.from_dict(gridSaerch.cv_results)
-#
-# #print complete results:
-# with pd.option_context('display.max_rows', None, 'display.max_columns', None):
-#     print(resultsFromGridSearch)
-#
-# print(gridSaerch.best_score['rmse'])
-# # combination of parameters that gave the best RMSE score
-# print(gridSaerch.best_params['rmse'])
-#
-# bestSVD = gridSaerch.best_estimator['rmse']
-
-
-
-exit(0)
-
-
-
-# # Train with Full Dataset:
-# fullTrainset = spRatingData.build_full_trainset()
-# svd.fit(fullTrainset)
-#
-# # save model to file:
-# with open(filenameOfModel, 'wb') as svdModel:
-#     pickle.dump(svd, svdModel)
-#
-# svd = False
-#
-# # load saved model:
-# with open(filenameOfModel, 'rb') as svdModel:
-#     svd = pickle.load(svdModel)
-#
-# def generateEstimatedRatingData(user_id, model):
-#     for curMovieID in ratings['id_movie']:
-#         prediction = model.predict(uid=user_id, iid=curMovieID, verbose=False)
-#         if prediction.est > 3.0:
-#             print(prediction)
-#
-# generateEstimatedRatingData(22, svd)
-#
-# databaseConnection.close()
