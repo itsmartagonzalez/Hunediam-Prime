@@ -13,7 +13,6 @@ import pandas as pd
 import sqlite3
 import matplotlib.pyplot as plt
 import surprise as sp
-from surprise.model_selection import GridSearchCV
 import pickle
 
 filenameOfModel = '../trainedModels/svd__trained_model.sav'
@@ -31,24 +30,74 @@ ratings = pd.DataFrame(ratings, columns = ['id_user', 'id_movie', 'rating'])
 spReader = sp.Reader(rating_scale=(1,5))
 spRatingData = sp.Dataset.load_from_df(ratings, spReader)
 
+def getOwnStatistics(predictions):
+    #difference to considered as:
+    rightOnDif = 0.5
+    stillGoodDif = 1
+    mehDif = 1.5
+
+    result = {}
+    result['rightOn'] = 0
+    result['stillGood'] = 0
+    result['meh'] = 0
+    result['bad'] = 0
+    for curPred in predictions:
+        curPredDif = abs(curPred.r_ui - curPred.est)
+        if curPredDif <= rightOnDif:
+            result['rightOn'] += 1
+        elif curPredDif <= stillGoodDif:
+            result['stillGood'] += 1
+        elif curPredDif <= mehDif:
+            result['meh'] += 1
+        else:
+            result['bad'] += 1
+    print("Own statistics: ", str(result))
+
+
+splittedDataset = sp.model_selection.split.KFold(n_splits=5, random_state=None, shuffle=True)
+svdAlgorithm = sp.SVD(n_epochs=5)
+for trainset, testset in splittedDataset.split(spRatingData):
+    #Training the algorithm:
+    svdAlgorithm.fit(trainset)
+    #predictions:
+    predictions = svdAlgorithm.test(testset)
+    getOwnStatistics(predictions)
+
+    sp.accuracy.rmse(predictions, verbose=True)
+    sp.accuracy.mae(predictions, verbose=True)
+
+
+
+
+
+
+
+
+
+
+
+
 # Cross Validating:
-svd = sp.SVD(verbose=True, n_epochs=10)
+# svd = sp.SVD(verbose=True, n_epochs=10)
 
-# Estimating best values:
-print('starting grid search...')
-param_grid = {'n_epochs': [5, 10, 15], 'lr_all': [0.002, 0.005, 0.01, 0.02], 'reg_all': [0.2, 0.4, 0.6]}
-grid_search = GridSearchCV(sp.SVD, param_grid, measures=['rmse', 'mae'], cv=5)
-grid_search.fit(spRatingData)
-
-results_df = pd.DataFrame.from_dict(grid_search.cv_results)
-
-print(results_df)
-
-print(grid_search.best_score['rmse'])
-# combination of parameters that gave the best RMSE score
-print(grid_search.best_params['rmse'])
-
-bestSVD = grid_search.best_estimator['rmse']
+# # Estimating best values:
+# print('starting grid search...')
+# param_grid = {'n_epochs': [5, 10, 15], 'lr_all': [0.002, 0.005, 0.01, 0.02], 'reg_all': [0.2, 0.4, 0.6]}
+# #paramGrid = {'n_epochs': [1], 'lr_all': [0.002], 'reg_all': [0.4, 0.6]}
+# gridSaerch = GridSearchCV(sp.SVD, paramGrid, measures=['rmse', 'mae'], cv=5)
+# gridSaerch.fit(spRatingData)
+#
+# resultsFromGridSearch = pd.DataFrame.from_dict(gridSaerch.cv_results)
+#
+# #print complete results:
+# with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+#     print(resultsFromGridSearch)
+#
+# print(gridSaerch.best_score['rmse'])
+# # combination of parameters that gave the best RMSE score
+# print(gridSaerch.best_params['rmse'])
+#
+# bestSVD = gridSaerch.best_estimator['rmse']
 
 
 
