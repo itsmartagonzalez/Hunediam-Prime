@@ -8,6 +8,7 @@ import surprise as sp
 import pickle
 import logging
 import os
+import ast
 
 import threading
 import concurrent.futures
@@ -76,15 +77,16 @@ for chunk in testChunks:
     if len(chunk) > 1:
         with concurrent.futures.ThreadPoolExecutor(max_workers=maxThreads) as executor:
             for curResult in executor.map(runExternalProgram, chunk):
-                result.append(curResult)
+                result.append(ast.literal_eval(curResult))
     else:
-        result.append(runExternalProgram(chunk[0]))
+        result.append(ast.literal_eval(runExternalProgram(chunk[0])))
 
     logger.debug("Result for chunk obtained:"+str(result))
+    #convert string to dictionary
     allResults.extend(result)
-    break
 
 logger.info("All Results: "+str(allResults))
 
+os.remove(saveObtainedRaitingDataTo)
 
 databaseConnection.close()
