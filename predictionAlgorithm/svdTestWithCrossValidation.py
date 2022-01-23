@@ -16,12 +16,14 @@ import concurrent.futures
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
 
-saveObtainedRaitingDataTo = 'splittedData.sav'
+saveObtainedRaitingDataTo = 'splittedDataForMulttThreading.sav'
 
 # Create database conection
 database = '../database/test.db'
 databaseConnection = sqlite3.connect(database)
 dbSql = databaseConnection.cursor();
+
+minimumRatings = 1
 
 #CHECK IF  USER WITH MORE THAN X RATINGS GET CHOSEN FOR TRANING GETS BETTER REUSLTS
 #get rating data
@@ -87,7 +89,7 @@ for chunk in testChunks:
 
 logger.info("All Results: "+str(allResults))
 
-os.remove(saveObtainedRaitingDataTo)
+#os.remove(saveObtainedRaitingDataTo)
 
 bestResult = allResults[0]
 for result in allResults:
