@@ -9,6 +9,7 @@ import pickle
 import logging
 import os
 import ast
+import datetime
 
 import threading
 import concurrent.futures
@@ -18,14 +19,16 @@ logging.basicConfig(level=logging.INFO)
 
 saveObtainedRaitingDataTo = 'splittedDataForMulttThreading.sav'
 
+saveTrainedModelTo = '../trainedModels/svd_trained_model.sav'
+
 # Create database conection
 database = '../database/test.db'
 databaseConnection = sqlite3.connect(database)
-dbSql = databaseConnection.cursor();
+dbSql = databaseConnection.cursor()
 
-minimumRatings = 1
+minimumRatings = 15
 
-#CHECK IF  USER WITH MORE THAN X RATINGS GET CHOSEN FOR TRANING GETS BETTER REUSLTS
+#CHECK IF  USER WITH MORE THAN X RATINGS GET CHOSEN FOR TRANING GETS BETTER RESULTS
 #get rating data
 ratings = dbSql.execute('''SELECT id_user, id_movie, rating FROM rating''').fetchall()
 ratings = pd.DataFrame(ratings, columns = ['id_user', 'id_movie', 'rating'])
@@ -41,13 +44,16 @@ with open(saveObtainedRaitingDataTo, 'wb') as spTmp:
 def getInitialDistribution():
     # In implemented version get best from database latest entry
     #nEpochsStep = 5
-    nEpochs = [5, 10, 15, 20, 25, 30]
+    #nEpochs = [5, 10, 15, 20, 25, 30]
+    nEpochs = [5, 10]
 
     #lRAllStep = 0.005
-    lRAll = [0.001, 0.005, 0.01, 0.02]
+    #lRAll = [0.001, 0.005, 0.01, 0.02]
+    lRAll = [0.001, 0.005]
 
     #regAllStep = 0.2
-    regAll = [0.2, 0.4, 0.6, 0.8]
+    #regAll = [0.2, 0.4, 0.6, 0.8]
+    regAll = [0.2, 0.4]
 
     toTest = []
 
@@ -68,7 +74,27 @@ def runExternalProgram(values):
     output = stream.read()
     return output
 
-maxThreads = 20
+def insertResultIntoDatabases(results, dbSql, userData ,minRatings = 1):
+    logger.debug("INSERT INTO DATABASE")
+    lastIdSVDBlock = dbSql.execute('''SELECT max(id) FROM svdTrainBlock''').fetchall()[0][0]
+    logger.info("Last one was:"+str(lastIdSVDBlock))
+    nextSVDId = lastIdSVDBlock+1
+
+    curDate = datetime.datetime.now()
+    dbSql.execute('''INSERT INTO svdTrainBlock(id, test_date, min_ratings, description)
+        VALUES(?,?,?,?)''', (nextSVDId, curDate, minRatings, 'Automatic Update'))
+    
+    for res in allResults:
+        dbSql.execute('''INSERT INTO svdStatistics(
+            id_block, n_epochs, lr_all, reg_all, rmse, mae, right_on, still_good, meh, bad)
+            VALUES(?,?,?,?,?,?,?,?,?,?)''', (nextSVDId, res['inUse']['n_epochs'], res['inUse']['lr_all'],
+                res['inUse']['reg_all'], res['rmse'], res['mae'], res['rightOn'], res['stillGood'], res['meh'], res['bad']))
+    
+    for userId in set(userData['id_user']):
+        dbSql.execute('''INSERT INTO userStatistics(id_user, id_block)
+        VALUES(?,?)''', (userId, nextSVDId))
+
+maxThreads = 12
 testValues = getInitialDistribution()
 testChunks = [testValues[x:x+maxThreads] for x in range(0, len(testValues), maxThreads)]
 
@@ -96,7 +122,22 @@ for result in allResults:
     if result['rmse'] < bestResult['rmse']:
         bestResult = result
 
-print('Best Result:')
-print(bestResult)
+logger.info('Best Result:')
+logger.info(str(bestResult))
+
+insertResultIntoDatabases(allResults, dbSql, ratings, minimumRatings)
+
+# create prediction model from full dataset
+logger.info("Training algorithm with full dataset")
+fullTrainset = spRatingData.build_full_trainset()
+svdAlgorithm = sp.SVD(n_epochs=bestResult['inUse']['n_epochs'],
+    lr_all=bestResult['inUse']['lr_all'],reg_all=bestResult['inUse']['reg_all'])
+svdAlgorithm.fit(fullTrainset)
+
+# save model to file:
+logger.info("Saving trained algorithm to: "+ str(saveTrainedModelTo))
+with open(saveTrainedModelTo, 'wb') as svdModel:
+    pickle.dump(svdAlgorithm, svdModel)
+
 
 databaseConnection.close()

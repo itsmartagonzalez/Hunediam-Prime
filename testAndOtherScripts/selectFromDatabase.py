@@ -4,6 +4,7 @@
 
 import sqlite3
 import re
+import pandas as pd
 
 # Files
 
@@ -35,9 +36,25 @@ genre = "Comedy"
 # print("Found " + str(len(movieTitle)) + " Results")
 
 
-movieTitle = dbSql.execute('''SELECT count(*) FROM movie where overview IS NULL''').fetchall()
-print(movieTitle)
+# movieTitle = dbSql.execute('''SELECT count(*) FROM movie where overview IS NULL''').fetchall()
+# print(movieTitle)
 
+minimumRatings = 20 # minimum count of ratings per user in our data base
+
+ratings = dbSql.execute('''WITH tmpRatings AS (SELECT id_user, rating FROM rating
+                            GROUP BY id_user
+                            HAVING count(rating) >= ?)
+                            SELECT rating.id_user, rating.id_movie, rating.rating FROM rating INNER JOIN tmpRatings
+                            on rating.id_user = tmpRatings.id_user
+                            ''', (minimumRatings,)).fetchall()
+
+# print(ratings[:10])
+# print(len(ratings))
+ratings = pd.DataFrame(ratings, columns = ['id_user', 'id_movie', 'rating'])
+
+# ratings = dbSql.execute('''SELECT MIN(mycount) FROM (SELECT id_user, count(rating) mycount FROM rating GROUP BY id_user)''').fetchall()
+
+print(set(ratings['id_user']))
 
 # SELECT id and titles of movies from genre ... that have at least a rating of ...
 
