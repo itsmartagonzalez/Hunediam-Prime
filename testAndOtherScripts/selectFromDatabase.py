@@ -54,7 +54,17 @@ ratings = pd.DataFrame(ratings, columns = ['id_user', 'id_movie', 'rating'])
 
 # ratings = dbSql.execute('''SELECT MIN(mycount) FROM (SELECT id_user, count(rating) mycount FROM rating GROUP BY id_user)''').fetchall()
 
-print(set(ratings['id_user']))
+# SVD Statistics
+
+svdStatistics = dbSql.execute('''SELECT * FROM svdStatistics''').fetchall()
+# print(svdStatistics)
+
+# SVD ID BLOCK
+idBlock = 2
+svdStatistics = dbSql.execute('''SELECT * FROM svdStatistics WHERE id_block = ? ''', (idBlock,)).fetchall()
+
+print(svdStatistics)
+
 
 # SELECT id and titles of movies from genre ... that have at least a rating of ...
 

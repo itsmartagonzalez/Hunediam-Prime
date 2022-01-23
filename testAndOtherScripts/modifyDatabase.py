@@ -16,7 +16,7 @@ dbSql = databaseConnection.cursor();
 
 
 curDate = datetime.datetime.now()
-dbSql.execute("INSERT INTO svdTrainBlock(id, test_date, min_ratings, description) VALUES(?,?,?,?)", (0, curDate, 1, 'Testing insert'))
+dbSql.execute("INSERT INTO svdTrainBlock(id, test_date, min_ratings, description) VALUES(?,?,?,?)", (1, curDate, 1, 'Testing insert'))
 
 databaseConnection.commit()
 databaseConnection.close()
