@@ -36,7 +36,7 @@ svd = sp.SVD(verbose=True, n_epochs=10)
 
 # Estimating best values:
 print('starting grid search...')
-param_grid = {'n_epochs': [5, 10, 15], 'lr_all': [0.002, 0.005, 0.01, 0.02], 'reg_all': [0.2, 0.4, 0.6]}
+paramGrid = {'n_epochs': [5, 10, 15], 'lr_all': [0.002, 0.005, 0.01, 0.02], 'reg_all': [0.2, 0.4, 0.6]}
 #paramGrid = {'n_epochs': [1], 'lr_all': [0.002], 'reg_all': [0.4, 0.6]}
 gridSaerch = GridSearchCV(sp.SVD, paramGrid, measures=['rmse', 'mae'], cv=5)
 gridSaerch.fit(spRatingData)

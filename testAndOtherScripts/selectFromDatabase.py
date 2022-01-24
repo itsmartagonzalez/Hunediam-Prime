@@ -63,8 +63,28 @@ svdStatistics = dbSql.execute('''SELECT * FROM svdStatistics''').fetchall()
 idBlock = 2
 svdStatistics = dbSql.execute('''SELECT * FROM svdStatistics WHERE id_block = ? ''', (idBlock,)).fetchall()
 
-print(svdStatistics)
+# print(svdStatistics)
 
+
+# Get users 
+
+forMovie = 1
+ratingAbove = 5
+# select movies with similar rating from the same users
+# wellRatedMovies = dbSql.execute('''WITH tmpSelectedUsers AS (SELECT id_user
+#                                                                 FROM rating
+#                                                                 WHERE id_movie = ? and rating.rating >= ?)
+#                                     SELECT count(rating.id_movie)
+#                                     FROM rating INNER JOIN tmpSelectedUsers
+#                                     on rating.id_user = tmpSelectedUsers.id_user
+#                                     where rating.rating >= ?''', (forMovie, ratingAbove, ratingAbove,)).fetchall()
+
+# print(wellRatedMovies)
+
+# sameFromUsers = dbSql.execute('''SELECT count(rating.id_movie) FROM rating 
+#                               where rating.rating >= ? and rating.id_user IN (SELECT rating.id_user FROM rating
+#                                 where rating.rating >= ? and rating.id_movie = ?)''', (ratingAbove, ratingAbove, forMovie,)).fetchall()
+# print(sameFromUsers)
 
 # SELECT id and titles of movies from genre ... that have at least a rating of ...
 
