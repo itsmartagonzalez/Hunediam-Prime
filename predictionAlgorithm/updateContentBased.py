@@ -108,7 +108,6 @@ def checkResultForSingleMovie(forMovie, similarMovies, dbSql):
     moviesWatched = np.array(moviesWatched) #moviesLiked
     logger.debug(str(moviesWatched)) #moviesLiked
     if len(moviesWatched) > 0:
-        print("si hay")
         for curMovie in similarMovies:
             if curMovie in moviesWatched[:,0]:  #moviesLiked
                 index = np.where(moviesWatched[:,0] == curMovie)[0]
