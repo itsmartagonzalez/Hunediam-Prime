@@ -4,20 +4,23 @@
     <meta charset="UTF-8">
     <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'">
-    <link href="./styles.css" rel="stylesheet">
+    <link href="./styles/login-styles.css" rel="stylesheet">
     <script defer src="./index.js"></script>
     
     <title>Hunediam Prime</title>
   </head>
   <body>
-    <div class=header>
-      <h1>Hunediam Prime</h1>
-      <p> Tu recomendador de peliculas</p>
+    <div class="content">
+      <div class=header>
+        <img src="./img/icons/logo.png" style="margin-right:20px">
+        <h1>Hunediam Prime</h1>
+      </div>
+      <div class=login>
+        <label id="user-id"><b>User ID</b></label>
+        <input id="user-id-input" type="text" placeholder="Enter User ID" required>
+        <button class="submit">Login</button>
+      </div>
     </div>
-    
-    We are using Node.js <span id="node-version"></span>,
-    Chromium <span id="chrome-version"></span>,
-    and Electron <span id="electron-version"></span>.
   </body>
 
 </html>
