@@ -17,7 +17,7 @@ import concurrent.futures
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
 
-saveObtainedRaitingDataTo = 'splittedDataForMulttThreading.sav'
+saveObtainedRaitingDataTo = 'splittedDataForMultThreading.sav'
 
 saveTrainedModelTo = '../trainedModels/svd_trained_model.sav'
 
@@ -90,13 +90,13 @@ def insertResultIntoDatabases(results, dbSql, userData ,minRatings = 1):
     curDate = datetime.datetime.now()
     dbSql.execute('''INSERT INTO svdTrainBlock(id, test_date, min_ratings, description)
         VALUES(?,?,?,?)''', (nextSVDId, curDate, minRatings, 'Automatic Update'))
-    
+
     for res in allResults:
         dbSql.execute('''INSERT INTO svdStatistics(
             id_block, n_epochs, lr_all, reg_all, rmse, mae, right_on, still_good, meh, bad)
             VALUES(?,?,?,?,?,?,?,?,?,?)''', (nextSVDId, res['inUse']['n_epochs'], res['inUse']['lr_all'],
                 res['inUse']['reg_all'], res['rmse'], res['mae'], res['rightOn'], res['stillGood'], res['meh'], res['bad']))
-    
+
     for userId in set(userData['id_user']):
         dbSql.execute('''INSERT INTO userStatistics(id_user, id_block)
         VALUES(?,?)''', (userId, nextSVDId))
@@ -122,7 +122,7 @@ for chunk in testChunks:
 
 logger.info("All Results: "+str(allResults))
 
-#os.remove(saveObtainedRaitingDataTo)
+os.remove(saveObtainedRaitingDataTo)
 
 bestResult = allResults[0]
 for result in allResults:
