@@ -93,22 +93,30 @@ def checkResultForSingleMovie(forMovie, similarMovies, dbSql):
     ratingAbove = 5 - similarityThreshold
     
     # select movies with good rating from users who liked the same movie
-    moviesLiked = dbSql.execute('''SELECT rating.id_movie FROM rating 
-                              where rating.rating >= ? and rating.id_user IN (
-                                  SELECT rating.id_user FROM rating where rating.rating >= ? and rating.id_movie = ?)''',
-                                    (ratingAbove, ratingAbove, forMovie,)).fetchall()
+    # moviesLiked = dbSql.execute('''SELECT rating.id_movie FROM rating 
+    #                           where rating.rating >= ? and rating.id_user IN (
+    #                               SELECT rating.id_user FROM rating where rating.rating >= ? and rating.id_movie = ?)''',
+    #                                 (ratingAbove, ratingAbove, forMovie,)).fetchall()
+
+    moviesWatched = dbSql.execute('''SELECT rating.id_movie, rating.rating FROM rating 
+                                    where rating.id_user IN (
+                                        SELECT rating.id_user FROM rating
+                                        where rating.rating >= ? and rating.id_movie = ?)''', (ratingAbove, forMovie,)).fetchall()
 
     # logger.debug(str(moviesLiked))
     estimationStatistics = Counter({'good': 0, 'bad':0})
-    moviesLiked = np.array(moviesLiked) #list(moviesLiked[0])
-    logger.debug(str(moviesLiked))
-    for curMovie in similarMovies:
-        if curMovie in moviesLiked:
-            estimationStatistics['good'] += 1
-        else:
-            estimationStatistics['bad'] += 1
-        logger.debug("Estimation statistics for singleMovie: " + str(estimationStatistics))
-
+    moviesWatched = np.array(moviesWatched) #moviesLiked
+    logger.debug(str(moviesWatched)) #moviesLiked
+    if len(moviesWatched) > 0:
+        print("si hay")
+        for curMovie in similarMovies:
+            if curMovie in moviesWatched[:,0]:  #moviesLiked
+                index = np.where(moviesWatched[:,0] == curMovie)[0]
+                if np.any([ x >= ratingAbove for x in moviesWatched[index, 1]]):
+                    estimationStatistics['good'] += 1
+                else:
+                    estimationStatistics['bad'] += 1
+            logger.debug("Estimation statistics for singleMovie: " + str(estimationStatistics))
     return estimationStatistics
 
 def getStatisticsForAllMovies(movies, dbSql, estimatorFunction):
