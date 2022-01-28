@@ -71,34 +71,26 @@ def getMovieData(dbSql):
     logger.debug("Finished movies adding actors")
 
 
-def getSimilarity(wordVector, movieID):
+def getSimilarity(wordVector, movieIDs, movies):
     overview_matrix = wordVector.fit_transform(movies[:,2].tolist())
     similarity_matrix = cosine_similarity(overview_matrix, overview_matrix)
 
-    similarity_score = list(enumerate(similarity_matrix[movieID]))
-    similarity_score = sorted(similarity_score, key=lambda x: x[1], reverse=True)
-    similarMovies = [i[0] for i in similarity_score]
-    return similarMovies
+    for pos in movieIDs:
+        similarity_score = list(enumerate(similarity_matrix[pos]))
+        similarity_score = sorted(similarity_score, key=lambda x: x[1], reverse=True)
+        similarMovies = [i[0] for i in similarity_score]
+        yield similarMovies
 
-def tfidfTesting(movieID, movies):
-    tfidf = TfidfVectorizer(stop_words='english')
-    return getSimilarity(tfidf, movieID)
-
+def tfidfTesting():
+    return TfidfVectorizer(stop_words='english')
 
 #Count vectorizer testing
-def cvTesting(movieID, movies):
-    cv = CountVectorizer(stop_words='english')
-    return getSimilarity(cv, movieID)
+def cvTesting():
+    return CountVectorizer(stop_words='english')
 
 def checkResultForSingleMovie(forMovie, similarMovies, dbSql):
     logger.debug("checkResultForSingleMovie:"+str(forMovie)+' similar:'+str(similarMovies))
     ratingAbove = 5 - similarityThreshold
-
-    # select movies with good rating from users who liked the same movie
-    # moviesLiked = dbSql.execute('''SELECT rating.id_movie FROM rating
-    #                           where rating.rating >= ? and rating.id_user IN (
-    #                               SELECT rating.id_user FROM rating where rating.rating >= ? and rating.id_movie = ?)''',
-    #                                 (ratingAbove, ratingAbove, forMovie,)).fetchall()
 
     moviesWatched = dbSql.execute('''SELECT rating.id_movie, rating.rating FROM rating
                                     where rating.id_user IN (
@@ -122,42 +114,28 @@ def checkResultForSingleMovie(forMovie, similarMovies, dbSql):
 
 def getStatisticsForAllMovies(movies, dbSql, estimatorFunction):
     estimationStatistics = Counter({'good': 0, 'bad':0})
-    for posInArr, movie in enumerate(movies):
-        similarMovies = estimatorFunction(posInArr, movies)[1:limitHowManyMovies+1]
-        estimationStatistics += checkResultForSingleMovie(movie[0], [movies[x][0] for x in similarMovies], dbSql)
-        logger.info("Statistics for movie id:"+str(movie[0])+' --> '+str(calculatePercentage(estimationStatistics) * 100.) + "%")
-
+    posInArr = 0;
+    for similarMovies in getSimilarity(estimatorFunction(), range(0, len(movies)), movies):
+        limitedSimilarMovies = similarMovies[1:limitHowManyMovies+1]
+        estimationStatistics += checkResultForSingleMovie(movies[posInArr][0], [movies[x][0] for x in limitedSimilarMovies], dbSql)
+        logger.info("Statistics for movie id:"+str(movies[posInArr][0])+' --> '+str(calculatePercentage(estimationStatistics) * 100.) + "%")
+        posInArr += 1
     return estimationStatistics
 
 def calculatePercentage(estimationStatistics):
-    percentage = estimationStatistics['good'] / (estimationStatistics['good'] + estimationStatistics['bad'])
+    percentage = 0
+    if estimationStatistics['good'] > 0 or estimationStatistics['bad'] > 0:
+        percentage = estimationStatistics['good'] / (estimationStatistics['good'] + estimationStatistics['bad'])
     return percentage
 
 movies = getMovieData(dbSql)
 # print(movies[0:2])
 
+# tfidfTesting: 65.24580926891112%
 TfidfVectorizerStats = getStatisticsForAllMovies(movies, dbSql, tfidfTesting)
 CountVectorizerStats = getStatisticsForAllMovies(movies, dbSql, cvTesting)
 
 logger.info("Porcentaje de acierto usando tfidfTesting: " + str(calculatePercentage(TfidfVectorizerStats) * 100.) + "%")
 logger.info("Porcentaje de acierto usando cvTesting: " + str(calculatePercentage(CountVectorizerStats) * 100.) + "%")
-
-
-# print(movies[:,1][0:20])
-# passing movie id (index) into function to get similar movies
-# forId = 8376
-# print(movies[forId])
-# print()
-# similarMovies = tfidfTesting(forId, movies)[1:10]
-# print("Similar movies for: " + movies[forId][1])
-# for id in similarMovies:
-#     print(movies[id][1])
-
-
-# print()
-# similarMovies = cvTesting(forId, movies)[1:10]
-# print("Similar movies for: " + movies[forId][1])
-# for id in similarMovies:
-#     print(movies[id][1])
 
 databaseConnection.close()
