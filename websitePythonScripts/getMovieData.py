@@ -21,6 +21,9 @@ def getMovieData(movies):
       select = dbSql.execute("SELECT * FROM movie WHERE id = ?", movieID).fetchall()
       if len(select) > 0:
         movieInfo[movieID] = select[0]
+  # commiting and closing conection
+  databaseConnection.commit()
+  databaseConnection.close()
   return movieInfo
 
 if __name__ == '__main__':

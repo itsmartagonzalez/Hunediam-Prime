@@ -14,11 +14,13 @@ body, html {
 }
 
 .header {
-  height: 10%;
+  height: 10vh;
+  width: 100vw;
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: center;
+  position: fixed;
   color: white;
   font-size: 300%;
   font-weight: bold;
@@ -28,23 +30,28 @@ body, html {
 }
 
 .content {
-  height: 90%;
+  height: 90vh;
   margin: 0;
+  margin-top: 17vh;
   display: flex;
   flex-direction: row;
   align-items: center;
 }
 
 .sidebar {
-  height: 100%;
-  width: 20%;
-  margin: 0;
+  height: 90vh;
+  width: 20vw;
+  padding-top: 15vh;
   display: flex;
   flex-direction: column;
   justify-content: flex start;
   align-items: center;
   background-color: rgb(224, 224, 224);
   font-size: 200%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: -2;
 }
 
 .sidebar h2 {
@@ -86,8 +93,39 @@ button:active {
 	top:1px;
 }
 
-.movies h2{
-  font-size: 75%;
+.movies {
+  margin: auto;
+  margin-left: 20vw;
+}
+
+.movies h2 {
+  width: 100%;
+  font-size: 200%;
+  color: black;
   font-weight: bold;
-  justify-content: center;
+  display: inline-block;
+  text-align: center;
+  margin-bottom: 2em;
+}
+
+.movie-container {
+  width: 80vw;
+  list-style: none;
+  display: flex;
+  flex-direction: row;
+  flex-flow: row wrap;
+}
+
+.movie-container li {
+  margin: 0em 3em;
+  margin-bottom: 3em;
+}
+
+li h3 {
+  font-size: 90%;
+}
+
+li img {
+  height: 40vh;
+  width: auto;
 }
