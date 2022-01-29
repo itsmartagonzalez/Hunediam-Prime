@@ -24,6 +24,7 @@ dbSql = databaseConnection.cursor()
 
 
 limitHowManyMovies = 20
+averageRating = 3
 
 
 def getMovieData(dbSql):
@@ -113,7 +114,7 @@ def updateDatabaseToContainNewResults(forMovie, similarMovies, dbSql):
     for i in range(0, numberOfNewInserts):
         dbSql.execute('''INSERT INTO contentBasedSimilar(id_movie, id_similar_movie)
             VALUES(?,?)''', (forMovie, similarMovies[similarMovieToInsert],))
-            similarMovieToInsert += 1
+        similarMovieToInsert += 1
         # number of new inserts
 
     # delete excess entries
@@ -123,14 +124,16 @@ def updateDatabaseToContainNewResults(forMovie, similarMovies, dbSql):
     for idToDelete in toDelete:
         dbSql.execute('''DELETE FROM contentBasedSimilar WHERE id = ?''', (idToDelete[0],))
 
+    logger.debug("Updated: " + str(numberOfUpdates) + " Inserted: " + str(numberOfNewInserts)+" Deleted: "+str(numberOfDeletions))
+
 
 def checkResultForSingleMovie(forMovie, similarMovies, dbSql):
     logger.debug("checkResultForSingleMovie:"+str(forMovie)+' similar:'+str(similarMovies))
 
-    # averageRating = dbSql.execute('''SELECT avg(rating.rating) FROM rating
-    #                           where rating.id_user IN (
-    #                               SELECT rating.id_user FROM rating where rating.id_movie = ?)''',
-    #                                 (forMovie,)).fetchall()
+    averageRating = dbSql.execute('''SELECT avg(rating.rating) FROM rating
+                              where rating.id_user IN (
+                                  SELECT rating.id_user FROM rating where rating.id_movie = ?)''',
+                                    (forMovie,)).fetchall()
 
     # moviesWatched = dbSql.execute('''SELECT rating.id_movie, rating.rating FROM rating
     #                                 where rating.id_user IN (
@@ -154,7 +157,7 @@ def checkResultForSingleMovie(forMovie, similarMovies, dbSql):
         for curMovie in similarMovies:
             if curMovie in moviesWatched[:,0]:  #moviesLiked
                 index = np.where(moviesWatched[:,0] == curMovie)[0]
-                if np.any([ x >= ratingAbove for x in moviesWatched[index, 1]]):
+                if np.any([ x >= averageRating for x in moviesWatched[index, 1]]):
                     estimationStatistics['good'] += 1
                 else:
                     estimationStatistics['bad'] += 1
@@ -168,6 +171,7 @@ def getStatisticsForAllMovies(movies, dbSql, estimatorFunction):
         limitedSimilarMovies = similarMovies[1:limitHowManyMovies+1]
         similarMoviesDBIds = [movies[x][0] for x in limitedSimilarMovies]
         statisticForSingleMovie = checkResultForSingleMovie(movies[posInArr][0], similarMoviesDBIds, dbSql)
+        updateDatabaseToContainNewResults(movies[posInArr][0], similarMoviesDBIds, dbSql)
         estimationStatistics += statisticForSingleMovie
         logger.info("Movie id:"+str(movies[posInArr][0])+' raw: '+str(statisticForSingleMovie)+
             ' --> '+str(calculatePercentage(statisticForSingleMovie) * 100.) + "%")
@@ -183,11 +187,11 @@ def calculatePercentage(estimationStatistics):
 movies = getMovieData(dbSql)
 # print(movies[0:2])
 
-# tfidfTesting: 65.24580926891112%
-TfidfVectorizerStats = getStatisticsForAllMovies(movies, dbSql, tfidfTesting)
+#TfidfVectorizerStats = getStatisticsForAllMovies(movies, dbSql, tfidfTesting)
 CountVectorizerStats = getStatisticsForAllMovies(movies, dbSql, cvTesting)
 
-logger.info("Porcentaje de acierto usando tfidfTesting: " + str(calculatePercentage(TfidfVectorizerStats) * 100.) + "%")
+#logger.info("Porcentaje de acierto usando tfidfTesting: " + str(calculatePercentage(TfidfVectorizerStats) * 100.) + "%")
 logger.info("Porcentaje de acierto usando cvTesting: " + str(calculatePercentage(CountVectorizerStats) * 100.) + "%")
 
+databaseConnection.commit()
 databaseConnection.close()
