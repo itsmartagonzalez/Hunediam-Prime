@@ -24,7 +24,7 @@ def getSimilarFromContentBased(*args, **kwargs):
 
   similarToMoviesRatedAbove = None
   if currentUser != None:
-    similarToMoviesRatedAbove = dbSql.execute('''SELECT movie.id FROM movie ''')
+    similarToMoviesRatedAbove = dbSql.execute('''SELECT movie.id FROM movie INNER JOIN ''')
 
 
 

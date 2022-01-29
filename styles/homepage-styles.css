@@ -9,30 +9,31 @@ body, html {
   width: 100%;
   margin: 0;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   justify-content: flex-start;
 }
 
 .header {
   height: 10vh;
-  width: 100vw;
+  width: 77vw;
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: center;
   position: fixed;
+  right: 0;
   color: white;
   font-size: 300%;
   font-weight: bold;
   padding: 0.5em;
   background-color: #d73d35;
-  margin: 0;
 }
 
 .content {
   height: 90vh;
+  overflow:auto;
   margin: 0;
-  margin-top: 17vh;
+  margin-top: 14.5vh;
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -41,17 +42,17 @@ body, html {
 .sidebar {
   height: 90vh;
   width: 20vw;
-  padding-top: 15vh;
+  padding-top: 30vh;
   display: flex;
   flex-direction: column;
   justify-content: flex start;
-  align-items: center;
+  align-items:center;
   background-color: rgb(224, 224, 224);
   font-size: 200%;
   position: fixed;
   top: 0;
   left: 0;
-  z-index: -2;
+  z-index: 1;
 }
 
 .sidebar h2 {
@@ -59,6 +60,7 @@ body, html {
   color: black;
   font-weight: bold;
   word-wrap: break-word;
+  text-align: center;
 }
 
 .buttons {
@@ -85,7 +87,7 @@ button {
 }
 
 button:hover {
-	background-color:rgba(23, 23, 23, 0);;
+	background-color:rgba(23, 23, 23, 0);
 }
 
 button:active {
@@ -123,6 +125,7 @@ button:active {
 
 li h3 {
   font-size: 90%;
+  word-wrap: break-word;
 }
 
 li img {

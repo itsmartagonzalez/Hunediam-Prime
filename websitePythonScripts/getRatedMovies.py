@@ -16,7 +16,6 @@ def getRatedMovies(idUser):
   # connection to database
   databaseConnection = sqlite3.connect(database)
   dbSql = databaseConnection.cursor()
-  movieInfo = {"movies":[]}
   if idUser[0].isdigit():
     logger.debug('Selecting rated movies for user with id: %s', idUser[0])
     moviesRated = dbSql.execute('''SELECT DISTINCT movie.id, movie.title, movie.overview, movie.image
@@ -25,35 +24,28 @@ def getRatedMovies(idUser):
                                     AND rating.id_user = ?
                                     AND movie.overview NOT NULL
                                     AND movie.image NOT NULL LIMIT 30''', (idUser[0],)).fetchall()
+
   # closing conection
+  movieInfo = '{"movies" : ['
   databaseConnection.close()
   for movie in moviesRated:
     logger.debug(movie)
-    currentMovie = {
-      "id": str(movie[0]),
-      "title": str(movie[1].encode('ascii', 'ignore')),
-      #"overview": str(movie[2].encode('ascii', 'ignore')).replace('"', ''),
-      "image": str(movie[3])
-    }
-    # currentMovie = {
-    #   "id": str(re.sub(r'[^\x00-\x7f]', " ", movie[0])),
-    #   "title": str(re.sub(r'[^\x00-\x7f]', " ", movie[1])),
-    #   "overview": str(re.sub(r'[^\x00-\x7f]', " ", movie[2])),
-    #   "image": str(re.sub(r'[^\x00-\x7f]', " ", movie[3]))
-    # }
-    # currentMovie = {
-    #   "id": movie[0],
-    #   "title": movie[1],
-    #   "overview": movie[2],
-    #   "image": movie[3]
-    # }
-    movieInfo["movies"].append(currentMovie)
-  logger.debug('moviesRated for userID = ' + str(idUser) + ' : ' + str(movieInfo))
-  movieInfo = str(movieInfo)
+    currentMovie = '{'
+    currentMovie += '"id" : '+ str(movie[0]) + ','
+    currentMovie += '"title" : "' + str(movie[1].encode('ascii', 'ignore')).replace('"', '')  + '",'
+    currentMovie += '"overview" : "' + str(movie[2].encode('ascii', 'ignore')).replace('"', '')  + '",'
+    currentMovie += '"image" : "' + str(movie[3]) + '"},'
+    movieInfo += currentMovie
+
+  movieInfo = movieInfo[:-1]
+  movieInfo += ']}'
+  logger.warning(movieInfo)
+  logger.debug('moviesRated for userID = ' + str(idUser) + ' : ' + str(len(movieInfo)))
+  #movieInfo = str(movieInfo)
   return movieInfo
 
 if __name__ == '__main__':
-  logging.basicConfig(level=logging.DEBUG, filemode='w', filename='logs/getRatedMovies.log', format='%(name)s - %(levelname)s - %(message)s')
+  logging.basicConfig(level=logging.WARNING, filemode='w', filename='logs/getRatedMovies.log', format='%(name)s - %(levelname)s - %(message)s')
   if len(sys.argv) >= 1:
     try:
       logger.debug('In main of getRatedMovies.py, argv: %s', sys.argv)

@@ -6,7 +6,7 @@ const loginButton = document.getElementById('login-button')
 const signUpButton = document.getElementById('signup-button')
 
 const checkUser = (sendArgs, userExists) => {
-  if (userExists) {
+  if (userExists == 0) {
     console.log("User id not found")
     textInput.value = '';
     textInput.placeholder = " Wrong ID. Try again.";

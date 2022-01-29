@@ -11,6 +11,8 @@
 //   console.log(info);
 // }
 
+process.env['ELECTRON_DISABLE_SECURITY_WARNINGS']=true
+
 // Modules to control application life and create native browser window
 const {app, BrowserWindow, ipcMain} = require('electron')
 const path = require('path')
@@ -31,7 +33,7 @@ function createWindow () {
   })
   mainWindow.maximize()
   // and load the index.html of the app.
-  mainWindow.loadFile('./pages/homePage.html')
+  mainWindow.loadFile('./pages/recommendationPage.html')
 
   //runPython('./getMovieData.py', ['1', '2'], infoPrint);
 
@@ -51,6 +53,18 @@ ipcMain.on('change-home', (event, data)=> {
   })
   //currentUser = data[0]
   //console.log(currentUser)
+})
+
+ipcMain.on('change-recommendation', (event, data)=> {
+  BrowserWindow.getAllWindows()[0].loadURL(url.format({
+    pathname : path.join(__dirname,'/pages/recommendationPage.html'),
+    protocol:'file',
+    slashes:true
+  }))
+  
+  BrowserWindow.getAllWindows()[0].webContents.on('did-finish-load', () => {
+    BrowserWindow.getAllWindows()[0].webContents.send('store-idUser-toRecommendation', data);
+  })
 })
 
 // This method will be called when Electron has finished

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
+    <meta http-equiv="Content-Security-Policy" content="default-src *; img-src * 'self' data: https:; script-src 'self' 'unsafe-inline' 'unsafe-eval' *; style-src  'self' 'unsafe-inline' *">
+    <link href="../styles/recommendationPage-styles.css" rel="stylesheet">
+    <script defer src="./recommendationPage.js"></script>
+    
+    <title>Hunediam Prime</title>
+  </head>
+  <body>
+    <div class=header>
+      <img src="../img/icons/logo.png" style="margin-right:20px">
+      Hunediam Prime
+    </div>
+    <div class=autocomplete>
+      <input id="movieInput" type="text" placeholder="Type to search..">
+      <button id="input-search">Search</button>
+    </div>
+  </div>
+  <div class="content">
+      <h2>Movies you might like...</h2>
+    </div>
+      
+  </body>
+
+</html>
