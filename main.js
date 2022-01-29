@@ -39,13 +39,19 @@ function createWindow () {
   // mainWindow.webContents.openDevTools()
 }
 
-ipcMain.on('change-home', ()=>{
+ipcMain.on('change-home', (event, data)=> {
   BrowserWindow.getAllWindows()[0].loadURL(url.format({
-      pathname : path.join(__dirname,'/pages/homeScreen.html'),
-      protocol:'file',
-      slashes:true
-  }));
-});
+    pathname : path.join(__dirname,'/pages/homeScreen.html'),
+    protocol:'file',
+    slashes:true
+  }))
+  console.log("pepepep")
+  BrowserWindow.getAllWindows()[0].webContents.on('did-finish-load', () => {
+    BrowserWindow.getAllWindows()[0].webContents.send('store-idUser', data);
+  })
+  //currentUser = data[0]
+  //console.log(currentUser)
+})
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.

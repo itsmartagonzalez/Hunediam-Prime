@@ -1,29 +1,25 @@
-const {remote} = require('electron')
 const ipcRenderer = require('electron').ipcRenderer
+const {runPython} = require('./websitePythonScripts/runPython.js')
 
-const runPython = (program, arguments, callback) => {
-  let programToRun = [program, ...arguments];
-  const python = require('child_process').spawn('python', programToRun);
-  python.stdout.on('data',function(data){
-    //console.log("data: ",data.toString('utf8'));
-    callback(data.toString('utf8'));
-  });
+const checkUser = (sendArgs, id) => {
+  if (id == 0) {
+    console.log("User id not found")
+    // Cambiar CSS para que introduzca ID valido 
+  } else {
+    ipcRenderer.send('change-home', sendArgs[1]);
+  }
 }
 
-const infoPrint = (info) => {
-  console.log(info);
-  //alert(info);
-}
-
-const textInput = document.getElementById('user-id-input');
+const textInput = document.getElementById('user-id-input')
 const submitButton = document.querySelector('.submit')
 
 const getTextInput = () => {
   console.log(textInput.value);
   // FALTA COMPROBAR EL ID y que no este vacío
-  ipcRenderer.send('change-home');
+  runPython('./websitePythonScripts/checkUserID.py', [textInput.value], checkUser);
 }
 
-submitButton.addEventListener('click', () => getTextInput())
+if (submitButton) {
+  submitButton.addEventListener('click', () => getTextInput())
+}
 
-//runPython('./websitePythonScripts/getMovieData.py', ['1', '2'], infoPrint);
