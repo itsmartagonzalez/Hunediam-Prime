@@ -31,7 +31,7 @@ function createWindow () {
   })
   mainWindow.maximize()
   // and load the index.html of the app.
-  mainWindow.loadFile('index.html')
+  mainWindow.loadFile('./pages/homePage.html')
 
   //runPython('./getMovieData.py', ['1', '2'], infoPrint);
 
@@ -41,11 +41,11 @@ function createWindow () {
 
 ipcMain.on('change-home', (event, data)=> {
   BrowserWindow.getAllWindows()[0].loadURL(url.format({
-    pathname : path.join(__dirname,'/pages/homeScreen.html'),
+    pathname : path.join(__dirname,'/pages/homePage.html'),
     protocol:'file',
     slashes:true
   }))
-  console.log("pepepep")
+  
   BrowserWindow.getAllWindows()[0].webContents.on('did-finish-load', () => {
     BrowserWindow.getAllWindows()[0].webContents.send('store-idUser', data);
   })

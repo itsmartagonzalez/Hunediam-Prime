@@ -1,16 +1,11 @@
 const ipcRenderer = require('electron').ipcRenderer
 
-currentUser = '';
-
+let = currentUser = '';
 
 ipcRenderer.on('store-idUser', (event,store) => {
   currentUser = store
   console.log('current ' + currentUser)
 });
-
-
-
-
 
 console.log(currentUser);
 

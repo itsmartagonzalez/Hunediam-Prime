@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'">
+    <link href="../styles/homepage-styles.css" rel="stylesheet">
+    <script defer src="./homePage.js"></script>
+    
+    <title>Hunediam Prime</title>
+  </head>
+  <body>
+    <div class=header>
+      <img src="../img/icons/logo.png" style="margin-right:20px">
+      Hunediam Prime
+    </div>
+    <div class="content">
+      <div class="sidebar">
+        Welcome
+        <button id="rate-more-button">Rate more movies</button>
+        <button id="recommendations-button">Recommend movies</button>
+      </div>
+      <div class="movies">
+      </div>
+    </div>
+      
+  </body>
+
+</html>
