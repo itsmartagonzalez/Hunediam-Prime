@@ -201,6 +201,8 @@ if (searchButton) {
 }
 
 const changeToHomePage = () => {
+  header.removeEventListener('click', () => changeToHomePage())
+  searchButton.removeEventListener('click', () => getMovie(textInput.value))
   ipcRenderer.send('change-home', currentUser);
 }
 

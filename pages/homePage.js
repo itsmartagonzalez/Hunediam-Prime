@@ -6,6 +6,8 @@ const welcomeElement = document.getElementsByClassName('sidebar')[0].querySelect
 const rateButton = document.getElementById('rate-more-button')
 const recommendButton = document.getElementById('recommendations-button')
 const header = document.getElementsByClassName('header')[0]
+const svdButton = document.getElementById('svd-button')
+const contentBasedButton = document.getElementById('content-based-button')
 
 let currentUser;
 let movieList = {}
@@ -68,27 +70,47 @@ const createMovieList = (movieList) => {
   })
 }
 
-if (recommendButton) {
-  recommendButton.addEventListener('click', () => changeToRecommenderPage())
-}
+// if (recommendButton) {
+//   recommendButton.addEventListener('click', () => changeToRecommenderPage())
+// }
 
 const changeToRecommenderPage = () => {
+  header.removeEventListener('click', () => changeToLogin())
   ipcRenderer.send('change-recommendation', currentUser);
 }
 
-if (rateButton) {
-  rateButton.addEventListener('click', () => changeToRatePage())
-}
+// if (rateButton) {
+//   rateButton.addEventListener('click', () => changeToRatePage())
+// }
 
 const changeToRatePage = () => {
+  header.removeEventListener('click', () => changeToLogin())
   ipcRenderer.send('change-rate', currentUser);
 }
 
 if (header) {
-  header.addEventListener('click', () => changeToHomePage())
+  header.addEventListener('click', () => changeToLogin())
 }
 
-const changeToHomePage = () => {
-  ipcRenderer.send('change-home', currentUser);
+const changeToLogin = () => {
+  header.removeEventListener('click', () => changeToLogin())
+  ipcRenderer.send('change-login', currentUser);
 }
 
+const changeSVD = () => {
+  header.removeEventListener('click', () => changeToLogin())
+  ipcRenderer.send('change-svd', currentUser);
+}
+
+// if (svdButton) {
+//   svdButton.addEventListener('click', changeSVD())
+// }
+
+const changeContentBased = () => {
+  header.removeEventListener('click', () => changeToLogin())
+  ipcRenderer.send('change-content-based', currentUser);
+}
+
+// if (contentBasedButton) {
+//   contentBasedButton.addEventListener('click', changeContentBased())
+// }

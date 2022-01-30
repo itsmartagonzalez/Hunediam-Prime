@@ -61,7 +61,7 @@ body,html {
 }
 
 .buttons {
-  height: 15%;
+  height: 25%;
   display: flex;
   flex-direction: column;
   justify-content: space-evenly;
@@ -119,9 +119,6 @@ button:active {
 
 .movie-container li {
   margin: 3em;
-}
-
-li h3 {
 }
 
 li img {

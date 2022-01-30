@@ -14,11 +14,15 @@ const checkUser = (sendArgs, userExists) => {
     textInput.classList.add("red");
   } else {
     ipcRenderer.send('change-home', sendArgs[0]);
+    loginButton.removeEventListener('click', () => getTextInput())
+    signUpButton.removeEventListener('click', () => createNewUser())
   }
 }
 
 const newUser = (sendArgs, id) => {
   ipcRenderer.send('change-home', id);
+  loginButton.removeEventListener('click', () => getTextInput())
+  signUpButton.removeEventListener('click', () => createNewUser())
 }
 
 
@@ -37,4 +41,3 @@ if (loginButton) {
 if (signUpButton) {
   signUpButton.addEventListener('click', () => createNewUser())
 }
-

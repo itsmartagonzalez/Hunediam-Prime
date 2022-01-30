@@ -79,6 +79,39 @@ ipcMain.on('change-rate', (event, data)=> {
   })
 })
 
+ipcMain.on('change-login', (event, data)=> {
+  BrowserWindow.getAllWindows()[0].loadURL(url.format({
+    pathname : path.join(__dirname,'/index.html'),
+    protocol:'file',
+    slashes:true
+  }))
+})
+
+ipcMain.on('change-content-based', (event, data)=> {
+  BrowserWindow.getAllWindows()[0].loadURL(url.format({
+    pathname : path.join(__dirname,'/pages/contentBasedPage.html'),
+    protocol:'file',
+    slashes:true
+  }))
+
+  BrowserWindow.getAllWindows()[0].webContents.on('did-finish-load', () => {
+    BrowserWindow.getAllWindows()[0].webContents.send('store-idUser-toCB', data);
+  })
+})
+
+ipcMain.on('change-svd', (event, data)=> {
+  BrowserWindow.getAllWindows()[0].loadURL(url.format({
+    pathname : path.join(__dirname,'/pages/SVDPage.html'),
+    protocol:'file',
+    slashes:true
+  }))
+
+  BrowserWindow.getAllWindows()[0].webContents.on('did-finish-load', () => {
+    BrowserWindow.getAllWindows()[0].webContents.send('store-idUser-toSVD', data);
+  })
+})
+
+
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.

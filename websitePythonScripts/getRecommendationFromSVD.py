@@ -14,10 +14,15 @@ logger = logging.getLogger(__name__)
 def generateEstimatedRatingData(user_id, model, ratings):
   for curMovieID in ratings['id_movie']:
     prediction = model.predict(str(user_id), str(curMovieID), verbose=False)
-    logger.debug(str(prediction))
+    #logger.debug(str(prediction))
     yield prediction
 
-def getRecommendationFromSVD(userId):
+def getRecommendationFromSVD(userId, **kwargs):
+  listOfMovieIDs = False
+  logger.debug("arguments: " + str(userId) + " kwargs: " + str(kwargs))
+  for k, v in kwargs.items():
+    if k == 'listOfMovieIDs':
+      listOfMovieIDs = v
   logger.debug('entered into getRecommendationFromSVD')
   numberOfMovies = 50
 
@@ -48,11 +53,21 @@ def getRecommendationFromSVD(userId):
     bestMovies = resultAsPD['item'].tolist()[:numberOfMovies]
 
     recommendations = getInfoFromMovieIDs(bestMovies, dbSql)
-
+    recommendations = recommendations[:-1]
+    isUserInSVD = dbSql.execute('''
+    SELECT count(userStatistics.id) FROM userStatistics INNER JOIN svdTrainBlock
+      ON userStatistics.id = svdTrainBlock.id
+      AND userStatistics.id = ?
+      ORDER BY svdTrainBlock.test_date DESC LIMIT 1
+    ''', (userId,)).fetchall()[0][0]
+    recommendations += ', "Approved" : ' + str(isUserInSVD) + '}'
     logger.debug(resultAsPD.to_numpy())
   
   databaseConnection.close()
-  return recommendations
+  if listOfMovieIDs:
+    return bestMovies
+  else:
+    return recommendations
 
 if __name__ == '__main__':
   logging.basicConfig(level=logging.DEBUG, filemode='w', filename='logs/getRecommendationFromSVD.log', format='%(name)s - %(levelname)s - %(message)s')

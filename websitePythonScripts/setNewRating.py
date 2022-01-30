@@ -19,8 +19,8 @@ def setNewRating(idUser, idMovie, newRating):
     logger.debug("inside isDigit")
     isMovieRated = dbSql.execute('''SELECT DISTINCT count(rating.rating) FROM rating
                                       where rating.id_movie = ?
-                                      and rating.id_user = ?''', (idMovie, idUser,)).fetchall()
-    if isMovieRated[0][0] != 0:
+                                      and rating.id_user = ?''', (idMovie, idUser,)).fetchall()[0][0]
+    if isMovieRated != 0:
       logger.debug('Changing rating to %s for the movie with id: %s for user with id: %s ', newRating, idMovie, idUser)
       dbSql.execute('''UPDATE rating SET rating = ? 
                        where rating.id_user = ?

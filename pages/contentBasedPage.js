@@ -34,7 +34,7 @@ const createMovieLiElement = (movie) => {
 }
 
 const createMovieList = (sendArgs, movieLista) => {
-  console.log(movieLista.length);
+  console.log(movieLista.substring(20660, 20670));
   movieList = JSON.parse(movieLista);
   moviesParent.innerHTML = '';
   movieList['movies'].forEach((movie) => {
@@ -63,12 +63,12 @@ const checkAmountOfMovies = (sendArgs, moviesAmount) => {
     content.appendChild(h2);
     runPython('./websitePythonScripts/getBestRatedMovies.py', [], createMovieList);
   } else {
-    title.innerHTML = "Movies you might like...";
+    title.innerHTML = "Movies you might like using Content Based algorithm...";
     content.appendChild(title);
     // make recomendation
     // show recommended movies
     console.log(typeof currentUser)
-    runPython('./websitePythonScripts/getCombinedRecommendation.py', [currentUser], createMovieList);
+    runPython('./websitePythonScripts/getSimilarFromContentBased.py', ['id=' + currentUser], createMovieList);
   }
 }
 
@@ -85,7 +85,7 @@ const changeToHomePage = () => {
   ipcRenderer.send('change-home', currentUser);
 }
 
-ipcRenderer.on('store-idUser-toRecommendation', (event,store) => {
+ipcRenderer.on('store-idUser-toCB', (event,store) => {
   currentUser = parseInt(store)
   console.log('current ' + currentUser)
   getRecommendedMovies(currentUser)

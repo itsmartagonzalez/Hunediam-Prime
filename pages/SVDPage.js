@@ -34,8 +34,12 @@ const createMovieLiElement = (movie) => {
 }
 
 const createMovieList = (sendArgs, movieLista) => {
-  console.log(movieLista.length);
+  console.log(movieLista.substring(20660, 20670));
   movieList = JSON.parse(movieLista);
+  if (movieList["Approved"] == 0) {
+    const title = document.getElementsByClassName("content-text")[0].querySelector('h2');
+    title.innerHTML += "<br>Try checking out the content based recommendations. They might suit you better."
+  }
   moviesParent.innerHTML = '';
   movieList['movies'].forEach((movie) => {
     //console.log(movie)
@@ -63,12 +67,12 @@ const checkAmountOfMovies = (sendArgs, moviesAmount) => {
     content.appendChild(h2);
     runPython('./websitePythonScripts/getBestRatedMovies.py', [], createMovieList);
   } else {
-    title.innerHTML = "Movies you might like...";
+    title.innerHTML = "Movies you might like using SVD algorithm...";
     content.appendChild(title);
     // make recomendation
     // show recommended movies
     console.log(typeof currentUser)
-    runPython('./websitePythonScripts/getCombinedRecommendation.py', [currentUser], createMovieList);
+    runPython('./websitePythonScripts/getRecommendationFromSVD.py', [currentUser], createMovieList);
   }
 }
 
@@ -85,7 +89,7 @@ const changeToHomePage = () => {
   ipcRenderer.send('change-home', currentUser);
 }
 
-ipcRenderer.on('store-idUser-toRecommendation', (event,store) => {
+ipcRenderer.on('store-idUser-toSVD', (event,store) => {
   currentUser = parseInt(store)
   console.log('current ' + currentUser)
   getRecommendedMovies(currentUser)

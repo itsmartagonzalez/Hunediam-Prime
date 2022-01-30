@@ -15,10 +15,13 @@ def getSimilarFromContentBased(*args, **kwargs):
   logger.debug('entered into getSimilarFromContentBased')
   similarForMovies = [x for x in args]
   currentUser = None
+  listOfMovieIDs = False
   logger.debug("arguments: " + str(args) + " kwargs: " + str(kwargs))
   for k, v in kwargs.items():
     if k == 'id':
       currentUser = v
+    if k == 'listOfMovieIDs':
+      listOfMovieIDs = v
 
   database = "database/test.db"
   # connection to database
@@ -77,7 +80,10 @@ def getSimilarFromContentBased(*args, **kwargs):
 
   # closing conection
   databaseConnection.close()
-  return movieInfo
+  if listOfMovieIDs:
+    return result
+  else:
+    return movieInfo
 
 if __name__ == '__main__':
   logging.basicConfig(level=logging.DEBUG, filemode='w', filename='logs/getSimilarFromContentBased.log', format='%(name)s - %(levelname)s - %(message)s')
