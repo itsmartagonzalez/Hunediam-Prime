@@ -9,7 +9,6 @@ ipcRenderer.on('store-idUser-toRate', (event,store) => {
   console.log('current ' + currentUser)
 });
 
-
 function autocomplete(inp, arr) {
   /*the autocomplete function takes two arguments,
   the text field element and an array of possible autocompleted values:*/

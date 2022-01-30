@@ -3,6 +3,7 @@
 import sys
 import sqlite3
 import logging
+from collections import Counter
 
 logger = logging.getLogger(__name__)
 ratingAbove = 4
@@ -10,10 +11,11 @@ ratingAbove = 4
 # gets similar movies to the ones in args,
 # define id_user = ... to only get movies that user hasn't seen yet
 def getSimilarFromContentBased(*args, **kwargs):
-  logger.debug('entered into getSimilarFromContentBased: %s', userId)
+  logger.debug('entered into getSimilarFromContentBased')
   similarForMovies = [x for x in args]
   currentUser = None
-  for k, v in kwargs.iteritems():
+  logger.debug("arguments: " + str(args) + " kwargs: " + str(kwargs))
+  for k, v in kwargs.items():
     if k == 'id':
       currentUser = v
 
@@ -21,46 +23,89 @@ def getSimilarFromContentBased(*args, **kwargs):
   # connection to database
   databaseConnection = sqlite3.connect(database)
   dbSql = databaseConnection.cursor()
-
+  logger.debug("connected to database")
   similarToMovies = []
-  similarToMoviesRatedAbove = None
+  similarToMoviesRatedAbove = []
   if currentUser != None:
+    logger.debug("Starting with user id")
     similarToMoviesRatedAbove = dbSql.execute('''
       SELECT contentBasedSimilar.id_similar_movie as movieID , count(contentBasedSimilar.id_similar_movie) as timesItAppears
         FROM contentBasedSimilar INNER JOIN rating INNER JOIN movie
           ON movie.id = rating.id_movie AND contentBasedSimilar.id_movie = movie.id
           AND rating.id_user = ? AND rating.rating >= ?
+          AND movie.image NOT NULL
           AND contentBasedSimilar.id_similar_movie NOT IN (
             SELECT DISTINCT id_movie FROM rating WHERE id_user = ?
           ) GROUP BY movieID ORDER BY timesItAppears DESC LIMIT 50''', (currentUser, ratingAbove, currentUser,)).fetchall()
-  
+    logger.debug("Got values for user watch similar movies")
     for simMovieFor in args:
       simMovie = dbSql.execute('''
-        SELECT DISTINCT id_similar_movie FROM contentBasedSimilar WHERE id_movie = ?
-      ''', (simMovieFor,)).fetchall()
+        SELECT DISTINCT contentBasedSimilar.id_similar_movie
+          FROM contentBasedSimilar INNER JOIN movie INNER JOIN rating
+            ON contentBasedSimilar.id_movie = movie.id AND movie.id = rating.id_movie
+              AND contentBasedSimilar.id_movie = ?
+              AND movie.image NOT NULL
+                AND contentBasedSimilar.id_similar_movie NOT IN (
+                  SELECT DISTINCT id_movie FROM rating WHERE id_user = ?
+                ) LIMIT 50
+        ''', (simMovieFor, currentUser,)).fetchall()
       similarToMovies.append(simMovie)
+    logger.debug("Gotten values for similar movies passed as args")
   else:
-    pass
+    logger.debug("Only get similar movies like the ones in arguments: "+str(similarForMovies))
+    for simMovieFor in similarForMovies:
+      simMovie = dbSql.execute('''
+        SELECT DISTINCT id_similar_movie FROM contentBasedSimilar WHERE id_movie = ? LIMIT 50''', (simMovieFor,)).fetchall()
+      similarToMovies.append(simMovie)
 
-    
+  logger.debug("Finished with getting data")
+  result = []
+  for movieUser in similarToMoviesRatedAbove:
+    for times in range(0, movieUser[1]):
+      result.append(movieUser[0])
+  logger.debug("Finished adding user based data")
+  for movieRes in similarToMovies:
+    result.append(movieRes[0][0])
+  result.sort(key=Counter(result).get, reverse=True)
+  result = list(dict.fromkeys(result))
 
+  logger.debug("result movies: "+str(result))
 
+  resultWithData = []
+  for movieID in result:
+    movieInfoSel = dbSql.execute('''SELECT DISTINCT * FROM movie WHERE id = ? LIMIT 50''', (movieID,)).fetchall()
+    logger.debug("RESULT MOVIE DATA: "+str(movieInfoSel))
+    if movieInfoSel[0][3]:
+      resultWithData.append(movieInfoSel[0])
+  
+  movieInfo = '{"movies" : ['
+  for movie in resultWithData:
+    logger.debug(movie)
+    currentMovie = '{'
+    currentMovie += '"id" : '+ str(movie[0]) + ','
+    currentMovie += '"title" : "' + str(movie[1].encode('ascii', 'ignore')).replace('"', '')  + '",'
+    currentMovie += '"overview" : "' + str(movie[2].encode('ascii', 'ignore')).replace('"', '')  + '",'
+    currentMovie += '"image" : "' + str(movie[3]) + '"},'
+    movieInfo += currentMovie
 
+  movieInfo = movieInfo[:-1]
+  movieInfo += ']}'
 
-
-  if userId[0].isdigit():
-    user = dbSql.execute("SELECT DISTINCT count(id_user) FROM rating WHERE id_user = ?", (userId[0],)).fetchall()
-    logger.debug('UserId ' + str(userId))
-    # commiting and closing conection
+  # closing conection
   databaseConnection.close()
-  return user
+  return movieInfo
 
 if __name__ == '__main__':
   logging.basicConfig(level=logging.DEBUG, filemode='w', filename='logs/getSimilarFromContentBased.log', format='%(name)s - %(levelname)s - %(message)s')
   if len(sys.argv) >= 2:
     try:
       logger.debug('In main of getSimilarFromContentBased.py, argv: %s', sys.argv)
-      print(checkUserID(sys.argv[1:])[0][0])
+      if sys.argv[-1][0] == 'i':
+        logger.debug('Kwargs present')
+        print(getSimilarFromContentBased(*sys.argv[1:len(sys.argv)-1], **dict(arg.split('=') for arg in sys.argv[len(sys.argv)-1:])))
+      else:
+        logger.debug('NO Kwargs')
+        print(getSimilarFromContentBased(*sys.argv[1:]))
     except Exception as e:
       logger.critical(e)
-    #sys.stdout.flush()
+    sys.stdout.flush()

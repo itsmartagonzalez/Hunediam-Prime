@@ -28,7 +28,7 @@ averageRating = 3
 
 
 def getMovieData(dbSql):
-    movies = dbSql.execute('''SELECT movie.id, movie.title, movie.overview FROM movie ORDER BY movie.id ASC''').fetchall()
+    movies = dbSql.execute('''SELECT movie.id, movie.title, movie.overview FROM movie WHERE movie.overview NOT NULL ORDER BY movie.id ASC''').fetchall()
 
     movies = np.array(movies)
 

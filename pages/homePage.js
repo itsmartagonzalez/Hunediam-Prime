@@ -7,14 +7,26 @@ const rateButton = document.getElementById('rate-more-button')
 const recommendButton = document.getElementById('recommendations-button')
 const header = document.getElementsByClassName('header')[0]
 
-let currentUser = '611';
+let currentUser = '1';
+let movieList = {}
 
 ipcRenderer.on('store-idUser', (event, store) => {
   currentUser = store
 });
 
 const getMovies = (userID) => {
-  runPython('./websitePythonScripts/getRatedMovies.py', [userID], createMovieList);
+  runPython('./websitePythonScripts/getRatedMovies.py', [userID], checkAmountOfMovies);
+}
+
+const checkAmountOfMovies = (sendArgs, movieLista) =>{
+  console.log(movieLista.length)
+  if (movieLista.length > 15) {
+    movieList = JSON.parse(movieLista);
+    createMovieList(movieList)
+  } else {
+    const text = document.getElementsByClassName('movies')[0].querySelector('h2')
+    text.innerHTML = " It seems like you have not rated any movies...<br>Try rating at least 5 to receive personalized recommendations.";
+  }
 }
 
 const createMovieLiElement = (movie) => {
@@ -44,8 +56,7 @@ const createMovieLiElement = (movie) => {
   moviesParent.appendChild(li);
 }
 
-const createMovieList = (sendArgs, movieLista) => {
-  movieList = JSON.parse(movieLista);
+const createMovieList = (movieList) => {
   movieList['movies'].forEach((movie) => {
     //console.log(movie)
     createMovieLiElement(movie);

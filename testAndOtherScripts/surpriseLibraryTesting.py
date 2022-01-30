@@ -19,7 +19,7 @@ filenameOfModel = 'trainedModels/svd_test_trained_data.sav'
 
 database = "database/test.db"
 databaseConnection = sqlite3.connect(database)
-dbSql = databaseConnection.cursor();
+dbSql = databaseConnection.cursor()
 
 ratings = dbSql.execute('''SELECT id_user, id_movie, rating FROM rating''').fetchall()
 ratings = pd.DataFrame(ratings, columns = ['id_user', 'id_movie', 'rating'])

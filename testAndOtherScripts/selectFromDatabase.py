@@ -109,15 +109,29 @@ ratingAbove = 5
 # print("Found " + str(len(movieTitle)) + " Results")
 
 
-bestRatedMovies = dbSql.execute('''
-    SELECT DISTINCT movie.id, movie.title, movie.overview, movie.image, avg(rating.rating) as avgR 
-      FROM movie INNER JOIN rating
-        on movie.id = rating.id_movie
-        and movie.overview NOT NULL
-        and movie.image NOT NULL
-        GROUP BY movie.id ORDER BY avgR DESC LIMIT 50''').fetchall()
+# bestRatedMovies = dbSql.execute('''
+#    SELECT DISTINCT movie.id, movie.title, movie.overview, movie.image, avg(rating.rating) as avgR 
+#      FROM movie INNER JOIN rating
+#        on movie.id = rating.id_movie
+#        and movie.overview NOT NULL
+#        and movie.image NOT NULL
+#        GROUP BY movie.id ORDER BY avgR DESC LIMIT 50''').fetchall()
 
-print(bestRatedMovies)
+# print(bestRatedMovies)
+
+
+userId = 1
+movieId = 1
+isMovieRated = dbSql.execute('''SELECT DISTINCT rating.rating FROM rating
+                                      where rating.id_movie = ?
+                                      and rating.id_user = ?''', (movieId, userId,)).fetchall()
+
+if isMovieRated is not None:
+  print('Movie rating ' + isMovieRated)
+else:
+  print('Movie not rated ' + isMovieRated)
+
+
 
 # closing conection
 databaseConnection.close()
