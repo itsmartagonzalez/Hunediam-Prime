@@ -20,7 +20,6 @@ body, html {
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  position: fixed;
   color: white;
   font-size: 300%;
   font-weight: bold;
@@ -28,24 +27,29 @@ body, html {
   background-color: #d73d35;
 }
 
+.rating-bar {
+  margin: 2em;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+
 .autocomplete {
-  margin-top: 18vh;
-  width: 40vh;
+  width: 30vh;
   position: relative;
   display: flex;
-  margin-left: auto;
-  margin-right: auto;
   flex-direction: row;
   justify-content: space-around;
   align-items: flex-end;
 }
 
-.content h2 {
-  display: inline-block;
+h2 {
   text-align: center;
   font-size: 150%;
   color: black;
   font-weight: bold;
+  margin: 0em 1em;
 }
 
 input {
@@ -105,9 +109,9 @@ button {
 	cursor:pointer;
 	color:#ffffff;
 	font-family: Montserrat;
-	font-size:100%;
+	font-size:90%;
 	font-weight:bold;
-	padding:3% 6%;
+	padding: 0.5em 1em;
 	text-decoration:none;
 	text-shadow:0px 1px 0px #530400;
   margin: 0em 1em;
@@ -121,3 +125,42 @@ button:active {
 	position:relative;
 	top:1px;
 }
+
+.movie-display {
+  height:100%;
+  margin: 2em 50vh;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.movie-display img {
+  border: 3px solid rgb(224, 224, 224);
+}
+
+.title-overview {
+  margin-left: 5%;
+}
+
+.title-overview h2, p {
+  text-align: left;
+  margin-left: 0;
+}
+
+.rating {
+  width: 100%;
+}
+
+.rating__star {
+  cursor: pointer;
+  color: black;
+}
+
+.fa-star {
+  font-size: 2em;
+}
+
+.checked {
+  color: gold;
+}
+

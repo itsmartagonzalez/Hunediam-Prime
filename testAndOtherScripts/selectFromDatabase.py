@@ -120,16 +120,26 @@ ratingAbove = 5
 # print(bestRatedMovies)
 
 
-userId = 1
+userId = 611
 movieId = 1
-isMovieRated = dbSql.execute('''SELECT DISTINCT rating.rating FROM rating
+newRating = 4.5
+isMovieRated = dbSql.execute('''SELECT DISTINCT count(rating.rating) FROM rating
                                       where rating.id_movie = ?
                                       and rating.id_user = ?''', (movieId, userId,)).fetchall()
 
-if isMovieRated is not None:
-  print('Movie rating ' + isMovieRated)
+if isMovieRated[0][0] != 0:
+  dbSql.execute('''UPDATE rating SET rating = ? WHERE rating.id_user = ? AND rating.id_movie = ?''', (newRating, userId, movieId,)).fetchall()
+  rating = dbSql.execute('''SELECT DISTINCT rating.rating FROM rating
+                            where rating.id_movie = ?
+                            and rating.id_user = ?''', (movieId, userId,)).fetchall()
+  print('Movie rating ', str(rating[0][0]))
 else:
-  print('Movie not rated ' + isMovieRated)
+  dbSql.execute('''INSERT INTO rating(id_user, id_movie, rating) 
+                   VALUES(?,?,?) ''',(userId, movieId, newRating,)).fetchall()
+  rating = dbSql.execute('''SELECT DISTINCT rating.rating FROM rating
+                            where rating.id_movie = ?
+                            and rating.id_user = ?''', (movieId, userId,)).fetchall()
+  print('Movie NOW rated ', str(rating[0][0]))
 
 
 

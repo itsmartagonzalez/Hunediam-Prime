@@ -2,6 +2,10 @@ const ipcRenderer = require('electron').ipcRenderer
 const {runPython} = require('../websitePythonScripts/runPython.js')
 
 const header = document.getElementsByClassName('header')[0]
+const searchButton = document.getElementById('search-button');
+const parentMovies = document.getElementsByClassName('movie-display')[0];
+const titleAndOverview = document.createElement('div');
+
 let = currentUser = '1';
 
 ipcRenderer.on('store-idUser-toRate', (event,store) => {
@@ -107,19 +111,86 @@ function autocomplete(inp, arr) {
   });
 }
 
- let movies = [];
+let movies = [];
  
- const getMovieTitles = (sendArgs, movieTitles) => {
-   //console.log(mo)
-  console.log(movieTitles.substring(0, 20));
-  movies = JSON.parse(movieTitles)['Titles'];
-   autocomplete(document.getElementById("movieInput"), movies);
- }
+const getMovieTitles = (sendArgs, movieTitles) => {
+  //console.log(mo)
+ console.log(movieTitles.substring(0, 20));
+ movies = JSON.parse(movieTitles)['Titles'];
+  autocomplete(document.getElementById("movieInput"), movies);
+}
+
+const getMovie = (movieTitle) => {
+  if (movieTitle) {
+    runPython('./websitePythonScripts/getMovieData.py', [movieTitle], showMovie);
+  }
+}
+
+const showMovie = (sendArgs, movieData) => {
+  if (movieData.length > 10) {
+    movieData = JSON.parse(movieData)
+    console.log(movieData)
+    titleAndOverview.classList.add("title-overview");
+    const title = document.createElement('h2');
+    const overview = document.createElement('p');
+    const img = document.createElement('img');
+    overview.textContent = movieData["overview"];
+    img.src = movieData["image"];
+    img.alt = movieData["title"] + " poster";
+    title.textContent = movieData["title"];
+    parentMovies.appendChild(img);
+    titleAndOverview.appendChild(title);
+    titleAndOverview.appendChild(overview);
+    parentMovies.appendChild(titleAndOverview);
+    addStars();
+    const ratingStars = [...document.getElementsByClassName("rating__star")];
+    executeRating(ratingStars);
+  }
+}
+
+const addStars = () => {
+  const rating = document.createElement('div');
+  rating.classList.add("rating");
+  for (let i = 0; i < 5; i++) {
+    const star = document.createElement('i');
+    //star.classList.add("rating__star","far","fa-star");
+    star.classList.add("rating__star", "fa","fa-star");
+
+    rating.appendChild(star);
+  }
+  titleAndOverview.appendChild(rating);
+}
+
+function executeRating(stars) {
+  // const starClassActive = "rating__star fas fa-star";
+  // const starClassInactive = "rating__star far fa-star";
+  const starClassActive = "rating__star fa fa-star checked";
+  const starClassInactive = "rating__star fa fa-star";
+  const starsLength = stars.length;
+  let i;
+  stars.map((star) => {
+    star.onclick = () => {
+       i = stars.indexOf(star);
+
+       if (star.className===starClassInactive) {        
+          for (i; i >= 0; --i) stars[i].className = starClassActive;
+       } else {
+          for (i; i < starsLength; ++i) stars[i].className = starClassInactive;
+       }
+    };
+ });
+}
  
- runPython('./websitePythonScripts/getAllMovies.py', [], getMovieTitles);
+runPython('./websitePythonScripts/getAllMovies.py', [], getMovieTitles);
 
 if (header) {
   header.addEventListener('click', () => changeToHomePage())
+}
+
+const textInput = document.getElementById('movieInput');
+
+if (searchButton) {
+  searchButton.addEventListener('click', () => getMovie(textInput.value))
 }
 
 const changeToHomePage = () => {

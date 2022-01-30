@@ -6,29 +6,27 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-# movies = array of movie ID
-def getMovieData(movies):
-  logger.debug('enetered into getMovieData: %s', movies)
+def getMovieData(movieTitle):
+  logger.debug('enetered into getMovieData for movie: %s', movieTitle)
 
   database = "database/test.db"
   # connection to database
   databaseConnection = sqlite3.connect(database)
   dbSql = databaseConnection.cursor()
-  movieInfo = {}
-  for movieID in movies:
-    if movieID.isdigit():
-      logger.debug('Select movie with id: %s', movieID)
-      select = dbSql.execute("SELECT * FROM movie WHERE id = ?", movieID).fetchall()
-      if len(select) > 0:
-        movieInfo[movieID] = select[0]
+  movie = dbSql.execute("SELECT * FROM movie WHERE title = ?", (movieTitle,)).fetchall()[0]
+
+  movieInfo = '{"id" : '+ str(movie[0]) + ','
+  movieInfo += '"title" : "' + str(movie[1].encode('ascii', 'ignore')).replace('"', '')  + '",'
+  movieInfo += '"overview" : "' + str(movie[2].encode('ascii', 'ignore')).replace('"', '')  + '",'
+  movieInfo += '"image" : "' + str(movie[3]) + '"}'
+  logger.debug('Selected movie: %s', str(movieInfo))
   # commiting and closing conection
-  databaseConnection.commit()
   databaseConnection.close()
   return movieInfo
 
 if __name__ == '__main__':
-  if len(sys.argv) >= 2:
-    logging.basicConfig(level=logging.ERROR)
+  logging.basicConfig(level=logging.DEBUG, filemode='w', filename='logs/getMovieData.log', format='%(name)s - %(levelname)s - %(message)s')
+  if len(sys.argv) == 2:
     logger.debug('In main of getMovieData.py, argv: %s', sys.argv)
-    print(getMovieData(sys.argv[1:]))
+    print(getMovieData(sys.argv[1]))
     sys.stdout.flush()

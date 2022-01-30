@@ -78,6 +78,7 @@ def getSimilarFromContentBased(*args, **kwargs):
     if movieInfoSel[0][3]:
       resultWithData.append(movieInfoSel[0])
   
+  logger.info("Found: " + str(len(resultWithData))+" MOVIES")
   movieInfo = '{"movies" : ['
   for movie in resultWithData:
     logger.debug(movie)

@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
     <meta http-equiv="Content-Security-Policy" content="default-src *; img-src * 'self' data: https:; script-src 'self' 'unsafe-inline' 'unsafe-eval' *; style-src  'self' 'unsafe-inline' *">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link href="../styles/ratePage-styles.css" rel="stylesheet">
     <script defer src="./ratePage.js"></script>
     <title>Hunediam Prime</title>
@@ -14,11 +15,16 @@
       Hunediam Prime
     </div>
     <div class="content">
-      <h2>Rate more movies</h2>
+      <div class="rating-bar">
+        <h2>Rate more Movies!</h2>
+        <div class=autocomplete>
+          <input id="movieInput" type="text" placeholder="Type to search..">
+        </div>
+        <button id="search-button">Search</button>
+      </div>
+      <div class="movie-display">
+        
+      </div>
     </div> 
-    <div class=autocomplete>
-      <input id="movieInput" type="text" placeholder="Type to search..">
-      <button id="search-button">Search</button>
-    </div>
   </body>
 </html>
