@@ -33,7 +33,7 @@ function createWindow () {
   })
   mainWindow.maximize()
   // and load the index.html of the app.
-  mainWindow.loadFile('./pages/recommendationPage.html')
+  mainWindow.loadFile('./pages/homePage.html')
 
   //runPython('./getMovieData.py', ['1', '2'], infoPrint);
 
@@ -47,7 +47,7 @@ ipcMain.on('change-home', (event, data)=> {
     protocol:'file',
     slashes:true
   }))
-  
+
   BrowserWindow.getAllWindows()[0].webContents.on('did-finish-load', () => {
     BrowserWindow.getAllWindows()[0].webContents.send('store-idUser', data);
   })
@@ -61,7 +61,7 @@ ipcMain.on('change-recommendation', (event, data)=> {
     protocol:'file',
     slashes:true
   }))
-  
+
   BrowserWindow.getAllWindows()[0].webContents.on('did-finish-load', () => {
     BrowserWindow.getAllWindows()[0].webContents.send('store-idUser-toRecommendation', data);
   })
