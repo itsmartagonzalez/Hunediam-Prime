@@ -14,8 +14,8 @@ def checkUserID(userId):
   dbSql = databaseConnection.cursor()
   user = []
   if userId[0].isdigit():
-    user = dbSql.execute("SELECT DISTINCT count(id_user) FROM rating WHERE id_user = ?", (userId[0],)).fetchall()
-    logger.debug('UserId ' + str(userId))
+    user = dbSql.execute("SELECT DISTINCT count(id) FROM user WHERE id = ?", (userId[0],)).fetchall()
+    logger.debug('UserId ' + str(userId) + ' with count = ' + str(user))
   # commiting and closing conection
   databaseConnection.close()
   return user

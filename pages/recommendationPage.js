@@ -34,6 +34,7 @@ const createMovieLiElement = (movie) => {
 }
 
 const createMovieList = (sendArgs, movieLista) => {
+  console.log(movieLista.substring(20660, 20670));
   movieList = JSON.parse(movieLista);
   movieList['movies'].forEach((movie) => {
     //console.log(movie)
@@ -44,9 +45,11 @@ const createMovieList = (sendArgs, movieLista) => {
 const checkAmountOfMovies = (sendArgs, moviesAmount) => {
   movieCounter = moviesAmount.slice(2, -4);
   console.log("Movies Amount: " + movieCounter);
-  let title = document.createElement("h2");
   let content = document.getElementsByClassName("content-text")[0];
+  content.innerHTML = '';
   let movieContainer = document.getElementsByClassName("movie-container")[0];
+  movieContainer.innerHTML = '';
+  let title = document.createElement("h2");
   if (movieCounter < 5) {
     let rateButton = document.createElement("button");
     let h2 = document.createElement("h2");
@@ -58,15 +61,14 @@ const checkAmountOfMovies = (sendArgs, moviesAmount) => {
     content.appendChild(rateButton);
     h2.innerHTML = "Nevertheless, here you have the best rated movies of all time.";
     content.appendChild(h2);
-    // Imprimir que tiene pocas rated movies 
-    // poner boton para rate movies
-    // show best rated movies
     runPython('./websitePythonScripts/getBestRatedMovies.py', [], createMovieList);
   } else {
     title.innerHTML = "Movies you might like...";
     content.appendChild(title);
     // make recomendation
     // show recommended movies
+    console.log(typeof currentUser)
+    runPython('./websitePythonScripts/getRecommendationFromSVD.py', [currentUser], createMovieList);
   }
 }
 
@@ -83,7 +85,7 @@ const changeToHomePage = () => {
 }
 
 ipcRenderer.on('store-idUser-toRecommendation', (event,store) => {
-  currentUser = store
+  currentUser = parseInt(store)
   console.log('current ' + currentUser)
   getRecommendedMovies(currentUser)
 });

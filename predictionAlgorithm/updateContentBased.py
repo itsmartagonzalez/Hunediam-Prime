@@ -28,7 +28,7 @@ averageRating = 3
 
 
 def getMovieData(dbSql):
-    movies = dbSql.execute('''SELECT movie.id, movie.title, movie.overview FROM movie WHERE movie.overview NOT NULL ORDER BY movie.id ASC''').fetchall()
+    movies = dbSql.execute('''SELECT movie.id, movie.title, movie.overview FROM movie ORDER BY movie.id ASC''').fetchall()
 
     movies = np.array(movies)
 
@@ -52,22 +52,21 @@ def getMovieData(dbSql):
     logger.debug("Finished movies adding genres")
 
     # Adding cast to movie
-    for movie in movies:
-        actors = dbSql.execute('''SELECT DISTINCT actor.name FROM actor INNER JOIN movieActor INNER JOIN movie
-                                    on movie.id = movieActor.id_movie
-                                    and movieActor.id_actor = actor.id
-                                    and movie.id == ?''', (int(movie[0]),)).fetchall()
-        actors = np.array(actors)
-        strConvertedActor = ". "
-        for actor in actors:
-            strConvertedActor += "-".join(actor[0].split()) + " "
-        if movie[2] is not None:
-            movie[2] += strConvertedActor
-        else:
-            movie[2] = strConvertedActor
+    # for movie in movies:
+    #     actors = dbSql.execute('''SELECT DISTINCT actor.name FROM actor INNER JOIN movieActor INNER JOIN movie
+    #                                 on movie.id = movieActor.id_movie
+    #                                 and movieActor.id_actor = actor.id
+    #                                 and movie.id == ?''', (int(movie[0]),)).fetchall()
+    #     actors = np.array(actors)
+    #     strConvertedActor = ". "
+    #     for actor in actors:
+    #         strConvertedActor += "-".join(actor[0].split()) + " "
+    #     if movie[2] is not None:
+    #         movie[2] += strConvertedActor
+    #     else:
+    #         movie[2] = strConvertedActor
+    # logger.debug("Finished movies adding actors")
     return movies
-
-    logger.debug("Finished movies adding actors")
 
 
 def getSimilarity(wordVector, movieIDs, movies):

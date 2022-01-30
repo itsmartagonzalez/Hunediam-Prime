@@ -7,11 +7,14 @@ const rateButton = document.getElementById('rate-more-button')
 const recommendButton = document.getElementById('recommendations-button')
 const header = document.getElementsByClassName('header')[0]
 
-let currentUser = '612';
+let currentUser;
 let movieList = {}
 
 ipcRenderer.on('store-idUser', (event, store) => {
-  currentUser = store
+  console.log('usuario ' + store)
+  currentUser = parseInt(store)
+  welcomeElement.innerHTML = "welcome <br>user " + currentUser;
+  getMovies(currentUser);
 });
 
 const getMovies = (userID) => {
@@ -19,9 +22,10 @@ const getMovies = (userID) => {
 }
 
 const checkAmountOfMovies = (sendArgs, movieLista) =>{
-  console.log(movieLista.length)
+  console.log(movieLista)
   if (movieLista.length > 15) {
     movieList = JSON.parse(movieLista);
+    moviesParent.innerHTML = "";
     createMovieList(movieList)
   } else {
     const text = document.getElementsByClassName('movies')[0].querySelector('h2')
@@ -88,5 +92,3 @@ const changeToHomePage = () => {
   ipcRenderer.send('change-home', currentUser);
 }
 
-welcomeElement.innerHTML = "welcome <br>user " + currentUser;
-getMovies(currentUser);

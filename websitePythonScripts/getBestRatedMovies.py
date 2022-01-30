@@ -32,8 +32,8 @@ def getBestRatedMovies():
     logger.debug(movie)
     currentMovie = '{'
     currentMovie += '"id" : '+ str(movie[0]) + ','
-    currentMovie += '"title" : "' + str(movie[1].encode('ascii', 'ignore')).replace('"', '')  + '",'
-    currentMovie += '"overview" : "' + str(movie[2].encode('ascii', 'ignore')).replace('"', '')  + '",'
+    currentMovie += '"title" : "' + str(movie[1]).replace('"', '')  + '",'
+    currentMovie += '"overview" : "' + str(movie[2]).replace('"', '').replace("\\'", "'")  + '",'
     currentMovie += '"image" : "' + str(movie[3]) + '",'
     currentMovie += '"avg rating" : ' + str(movie[4]) + '},'
     bestRatedMoviesInfo += currentMovie

@@ -8,8 +8,9 @@ const parentMovies = document.getElementsByClassName('movie-display')[0];
 let currentUser = '1';
 
 ipcRenderer.on('store-idUser-toRate', (event,store) => {
-  currentUser = store
+  currentUser = parseInt(store)
   console.log('current ' + currentUser)
+  runPython('./websitePythonScripts/getAllMovies.py', [], getMovieTitles);
 });
 
 function autocomplete(inp, arr) {
@@ -114,7 +115,7 @@ let movies = [];
  
 const getMovieTitles = (sendArgs, movieTitles) => {
   //console.log(mo)
- console.log(movieTitles.substring(0, 20));
+ console.log(movieTitles);
  movies = JSON.parse(movieTitles)['Titles'];
   autocomplete(document.getElementById("movieInput"), movies);
 }
@@ -187,8 +188,7 @@ function executeRating(stars, movieID) {
     };
  });
 }
- 
-runPython('./websitePythonScripts/getAllMovies.py', [], getMovieTitles);
+
 
 if (header) {
   header.addEventListener('click', () => changeToHomePage())

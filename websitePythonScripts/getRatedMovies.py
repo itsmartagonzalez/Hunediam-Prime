@@ -32,8 +32,8 @@ def getRatedMovies(idUser):
     logger.debug(movie)
     currentMovie = '{'
     currentMovie += '"id" : '+ str(movie[0]) + ','
-    currentMovie += '"title" : "' + str(movie[1].encode('ascii', 'ignore')).replace('"', '')  + '",'
-    currentMovie += '"overview" : "' + str(movie[2].encode('ascii', 'ignore')).replace('"', '')  + '",'
+    currentMovie += '"title" : "' + str(movie[1]).replace('"', '')  + '",'
+    currentMovie += '"overview" : "' + str(movie[2]).replace('"', '').replace("\\'", "'")  + '",'
     currentMovie += '"image" : "' + str(movie[3]) + '"},'
     movieInfo += currentMovie
 
@@ -45,7 +45,7 @@ def getRatedMovies(idUser):
   return movieInfo
 
 if __name__ == '__main__':
-  logging.basicConfig(level=logging.INFO, filemode='w', filename='logs/getRatedMovies.log', format='%(name)s - %(levelname)s - %(message)s')
+  logging.basicConfig(level=logging.DEBUG, filemode='w', filename='logs/getRatedMovies.log', format='%(name)s - %(levelname)s - %(message)s')
   if len(sys.argv) >= 1:
     try:
       logger.debug('In main of getRatedMovies.py, argv: %s', sys.argv)

@@ -10,11 +10,12 @@ from getInfoFromMovieIDs import getInfoFromMovieIDs
 
 logger = logging.getLogger(__name__)
 
+
 def generateEstimatedRatingData(user_id, model, ratings):
-    for curMovieID in ratings['id_movie']:
-        prediction = model.predict(uid=user_id, iid=curMovieID, verbose=False)
-        #logger.debug(str(prediction))
-        yield prediction
+  for curMovieID in ratings['id_movie']:
+    prediction = model.predict(str(user_id), str(curMovieID), verbose=False)
+    logger.debug(str(prediction))
+    yield prediction
 
 def getRecommendationFromSVD(userId):
   logger.debug('entered into getRecommendationFromSVD')
@@ -33,6 +34,8 @@ def getRecommendationFromSVD(userId):
     )
   ''', (userId,)).fetchall()
   notWatchedMovies = pd.DataFrame(notWatchedMovies, columns = ['id_movie'])
+  logger.debug("Gotten not watched movies")
+  logger.debug(notWatchedMovies['id_movie'].tolist())
 
   recommendations = ""
   with open(filenameOfModel, 'rb') as svdModel:
@@ -44,15 +47,16 @@ def getRecommendationFromSVD(userId):
     resultAsPD = resultAsPD.sort_values(by='est', ascending=False)
     bestMovies = resultAsPD['item'].tolist()[:numberOfMovies]
 
-    recommendations = getInfoFromMovieIDs(bestMovies)
+    recommendations = getInfoFromMovieIDs(bestMovies, dbSql)
 
-    logger.debug(bestMovies)
+    logger.debug(resultAsPD.to_numpy())
   
   databaseConnection.close()
   return recommendations
 
 if __name__ == '__main__':
   logging.basicConfig(level=logging.DEBUG, filemode='w', filename='logs/getRecommendationFromSVD.log', format='%(name)s - %(levelname)s - %(message)s')
+  logger.debug("IN MAIN OF getRecommendationFromSVD outside IF")
   if len(sys.argv) == 2:
     try:
       logger.debug('In main of getRecommendationFromSVD.py, argv: %s', sys.argv)

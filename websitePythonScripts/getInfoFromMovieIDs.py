@@ -25,8 +25,8 @@ def getInfoFromMovieIDs(movieIds, dbSql):
     logger.debug(movie)
     currentMovie = '{'
     currentMovie += '"id" : '+ str(movie[0]) + ','
-    currentMovie += '"title" : "' + str(movie[1].encode('ascii', 'ignore')).replace('"', '')  + '",'
-    currentMovie += '"overview" : "' + str(movie[2].encode('ascii', 'ignore')).replace('"', '')  + '",'
+    currentMovie += '"title" : "' + str(movie[1]).replace('"', '')  + '",'
+    currentMovie += '"overview" : "' + str(movie[2]).replace('"', '').replace("\\'", "'")  + '",'
     currentMovie += '"image" : "' + str(movie[3]) + '"},'
     movieInfo += currentMovie
 
@@ -36,5 +36,5 @@ def getInfoFromMovieIDs(movieIds, dbSql):
   return movieInfo
 
 if __name__ == '__main__':
-  logging.basicConfig(level=logging.DEBUG, filemode='w', filename='logs/getSimilarFromContentBased.log', format='%(name)s - %(levelname)s - %(message)s')
+  logging.basicConfig(level=logging.DEBUG, filemode='w', filename='logs/getInfoFromMovieID.log', format='%(name)s - %(levelname)s - %(message)s')
   logger.warning("THIS FILE CAN ONLY BE RUN FROM OTHER FILES")

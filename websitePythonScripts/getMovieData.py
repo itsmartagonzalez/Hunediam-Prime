@@ -16,8 +16,8 @@ def getMovieData(movieTitle):
   movie = dbSql.execute("SELECT * FROM movie WHERE title = ?", (movieTitle,)).fetchall()[0]
 
   movieInfo = '{"id" : '+ str(movie[0]) + ','
-  movieInfo += '"title" : "' + str(movie[1].encode('ascii', 'ignore')).replace('"', '')  + '",'
-  movieInfo += '"overview" : "' + str(movie[2].encode('ascii', 'ignore')).replace('"', '')  + '",'
+  movieInfo += '"title" : "' + str(movie[1]).replace('"', '')  + '",'
+  movieInfo += '"overview" : "' + str(movie[2]).replace('"', '').replace("\\'", "'")  + '",'
   movieInfo += '"image" : "' + str(movie[3]) + '"}'
   logger.debug('Selected movie: %s', str(movieInfo))
   # commiting and closing conection

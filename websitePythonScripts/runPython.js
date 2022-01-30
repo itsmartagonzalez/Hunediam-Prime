@@ -2,10 +2,10 @@ const path = require('path')
 
 const zeroCallback = () => {}
 
-const runPython = (program, arguments, callback = zeroCallback) => {
-  let programToRun = [program, ...arguments];
+const runPython = (program, originalArgs, callback = zeroCallback) => {
+  let programToRun = [program, ...originalArgs];
   console.log(`Running ` + programToRun + ' in path ' + path.join(process.cwd(),));
-  const python = require('child_process').spawn('python',  programToRun);
+  const python = require('child_process').spawn('python3',  programToRun);
 
   let result = "";
   python.stdout.on('data',function(data) {
@@ -13,7 +13,7 @@ const runPython = (program, arguments, callback = zeroCallback) => {
   });
 
   python.on('exit',function() {
-    callback(arguments, result);
+    callback(originalArgs, result);
   });
 
 }

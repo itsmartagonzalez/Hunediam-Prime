@@ -14,11 +14,13 @@ def getAllMovies():
   databaseConnection = sqlite3.connect(database)
   dbSql = databaseConnection.cursor()
   movies = dbSql.execute("SELECT DISTINCT title FROM movie").fetchall()
-  movies = np.array(movies)
+  #movies = np.array(movies)
 
   movieTitles = '{ "Titles" : ['
   for movie in movies:
-    movieTitles += '"'+str(movie[0].encode('ascii', 'ignore').replace('"', ''))+'",'
+    logger.debug(movie[0])
+    movieTitles += '"' + str(movie[0].replace('"', '')) + '",'
+  
   movieTitles = movieTitles[:-1]
   movieTitles += "]}"
   logger.debug('Movies ' + str(len(movieTitles)))
@@ -36,7 +38,7 @@ if __name__ == '__main__':
   logging.basicConfig(level=logging.DEBUG, filemode='w', filename='logs/allMovies.log', format='%(name)s - %(levelname)s - %(message)s')
   if len(sys.argv) >= 1:
     try:
-      logger.debug('In main of getAllMovies.py, argv: %s', sys.argv)
+      logger.debug('In main of getAllMovies.py, argv'+str(sys.argv))
       print(getAllMovies())
     except Exception as e:
       logger.critical(e)

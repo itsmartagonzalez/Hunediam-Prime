@@ -33,7 +33,7 @@ function createWindow () {
   })
   mainWindow.maximize()
   // and load the index.html of the app.
-  mainWindow.loadFile('./pages/homePage.html')
+  mainWindow.loadFile('./index.html')
 
   //runPython('./getMovieData.py', ['1', '2'], infoPrint);
 

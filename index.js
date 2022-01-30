@@ -6,13 +6,14 @@ const loginButton = document.getElementById('login-button')
 const signUpButton = document.getElementById('signup-button')
 
 const checkUser = (sendArgs, userExists) => {
+  console.log(userExists)
   if (userExists == 0) {
     console.log("User id not found")
     textInput.value = '';
     textInput.placeholder = " Wrong ID. Try again.";
     textInput.classList.add("red");
   } else {
-    ipcRenderer.send('change-home', sendArgs[1]);
+    ipcRenderer.send('change-home', sendArgs[0]);
   }
 }
 
