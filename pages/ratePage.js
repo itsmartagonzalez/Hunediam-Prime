@@ -4,9 +4,8 @@ const {runPython} = require('../websitePythonScripts/runPython.js')
 const header = document.getElementsByClassName('header')[0]
 const searchButton = document.getElementById('search-button');
 const parentMovies = document.getElementsByClassName('movie-display')[0];
-const titleAndOverview = document.createElement('div');
 
-let = currentUser = '1';
+let currentUser = '1';
 
 ipcRenderer.on('store-idUser-toRate', (event,store) => {
   currentUser = store
@@ -121,6 +120,7 @@ const getMovieTitles = (sendArgs, movieTitles) => {
 }
 
 const getMovie = (movieTitle) => {
+  console.log(movieTitle);
   if (movieTitle) {
     runPython('./websitePythonScripts/getMovieData.py', [movieTitle], showMovie);
   }
@@ -128,12 +128,14 @@ const getMovie = (movieTitle) => {
 
 const showMovie = (sendArgs, movieData) => {
   if (movieData.length > 10) {
+    parentMovies.innerHTML = "";
     movieData = JSON.parse(movieData)
     console.log(movieData)
-    titleAndOverview.classList.add("title-overview");
+    const titleAndOverview = document.createElement('div');
     const title = document.createElement('h2');
     const overview = document.createElement('p');
     const img = document.createElement('img');
+    titleAndOverview.classList.add("title-overview");
     overview.textContent = movieData["overview"];
     img.src = movieData["image"];
     img.alt = movieData["title"] + " poster";
@@ -142,41 +144,46 @@ const showMovie = (sendArgs, movieData) => {
     titleAndOverview.appendChild(title);
     titleAndOverview.appendChild(overview);
     parentMovies.appendChild(titleAndOverview);
-    addStars();
+    addStars(titleAndOverview);
     const ratingStars = [...document.getElementsByClassName("rating__star")];
-    executeRating(ratingStars);
+    executeRating(ratingStars, movieData["id"]);
   }
 }
 
-const addStars = () => {
+const addStars = (parent) => {
   const rating = document.createElement('div');
   rating.classList.add("rating");
   for (let i = 0; i < 5; i++) {
     const star = document.createElement('i');
-    //star.classList.add("rating__star","far","fa-star");
     star.classList.add("rating__star", "fa","fa-star");
 
     rating.appendChild(star);
   }
-  titleAndOverview.appendChild(rating);
+  const h3 = document.createElement('h3');
+  h3.textContent = "Please, rate this movie!"
+  rating.appendChild(h3);
+  parent.appendChild(rating);
 }
 
-function executeRating(stars) {
-  // const starClassActive = "rating__star fas fa-star";
-  // const starClassInactive = "rating__star far fa-star";
+function executeRating(stars, movieID) {
   const starClassActive = "rating__star fa fa-star checked";
   const starClassInactive = "rating__star fa fa-star";
   const starsLength = stars.length;
   let i;
   stars.map((star) => {
     star.onclick = () => {
-       i = stars.indexOf(star);
-
-       if (star.className===starClassInactive) {        
-          for (i; i >= 0; --i) stars[i].className = starClassActive;
-       } else {
-          for (i; i < starsLength; ++i) stars[i].className = starClassInactive;
-       }
+      i = stars.indexOf(star);
+      let newRating;
+      if (star.className===starClassInactive) {       
+        newRating = stars.indexOf(star) + 1;
+        for (i; i >= 0; --i) stars[i].className = starClassActive;
+      } else {
+        newRating = stars.indexOf(star);
+        for (i; i < starsLength; ++i) stars[i].className = starClassInactive;
+      }
+      document.getElementsByClassName('rating')[0].querySelector('h3').textContent = "Thanks for rating this movie."
+      console.log("New Rating: " + newRating);
+      runPython('./websitePythonScripts/setNewRating.py', [currentUser, movieID, newRating]);
     };
  });
 }

@@ -4,13 +4,14 @@ import sys
 import sqlite3
 import logging
 from collections import Counter
+from getInfoFromMovieIDs import getInfoFromMovieIDs
 
 logger = logging.getLogger(__name__)
-ratingAbove = 4
 
 # gets similar movies to the ones in args,
 # define id_user = ... to only get movies that user hasn't seen yet
 def getSimilarFromContentBased(*args, **kwargs):
+  ratingAbove = 4
   logger.debug('entered into getSimilarFromContentBased')
   similarForMovies = [x for x in args]
   currentUser = None
@@ -65,32 +66,35 @@ def getSimilarFromContentBased(*args, **kwargs):
       result.append(movieUser[0])
   logger.debug("Finished adding user based data")
   for movieRes in similarToMovies:
-    result.append(movieRes[0][0])
+    for curMovieInRes in movieRes:
+      result.append(curMovieInRes[0])
   result.sort(key=Counter(result).get, reverse=True)
   result = list(dict.fromkeys(result))
 
   logger.debug("result movies: "+str(result))
 
-  resultWithData = []
-  for movieID in result:
-    movieInfoSel = dbSql.execute('''SELECT DISTINCT * FROM movie WHERE id = ? LIMIT 50''', (movieID,)).fetchall()
-    logger.debug("RESULT MOVIE DATA: "+str(movieInfoSel))
-    if movieInfoSel[0][3]:
-      resultWithData.append(movieInfoSel[0])
-  
-  logger.info("Found: " + str(len(resultWithData))+" MOVIES")
-  movieInfo = '{"movies" : ['
-  for movie in resultWithData:
-    logger.debug(movie)
-    currentMovie = '{'
-    currentMovie += '"id" : '+ str(movie[0]) + ','
-    currentMovie += '"title" : "' + str(movie[1].encode('ascii', 'ignore')).replace('"', '')  + '",'
-    currentMovie += '"overview" : "' + str(movie[2].encode('ascii', 'ignore')).replace('"', '')  + '",'
-    currentMovie += '"image" : "' + str(movie[3]) + '"},'
-    movieInfo += currentMovie
+  movieInfo = getInfoFromMovieIDs(result, dbSql)
 
-  movieInfo = movieInfo[:-1]
-  movieInfo += ']}'
+  # resultWithData = []
+  # for movieID in result:
+  #   movieInfoSel = dbSql.execute('''SELECT DISTINCT * FROM movie WHERE id = ? LIMIT 50''', (movieID,)).fetchall()
+  #   logger.debug("RESULT MOVIE DATA: "+str(movieInfoSel))
+  #   if movieInfoSel[0][3]:
+  #     resultWithData.append(movieInfoSel[0])
+  
+  # logger.info("Found: " + str(len(resultWithData))+" MOVIES")
+  # movieInfo = '{"movies" : ['
+  # for movie in resultWithData:
+  #   logger.debug(movie)
+  #   currentMovie = '{'
+  #   currentMovie += '"id" : '+ str(movie[0]) + ','
+  #   currentMovie += '"title" : "' + str(movie[1].encode('ascii', 'ignore')).replace('"', '')  + '",'
+  #   currentMovie += '"overview" : "' + str(movie[2].encode('ascii', 'ignore')).replace('"', '')  + '",'
+  #   currentMovie += '"image" : "' + str(movie[3]) + '"},'
+  #   movieInfo += currentMovie
+
+  # movieInfo = movieInfo[:-1]
+  # movieInfo += ']}'
 
   # closing conection
   databaseConnection.close()

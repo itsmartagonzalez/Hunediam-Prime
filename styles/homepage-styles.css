@@ -111,8 +111,9 @@ button:active {
   padding: 2rem;
   overflow-y: scroll;
   display: flex;
-  flex-wrap: wrap;
-  justify-content: space-around;
+  flex-direction: row;
+  flex-flow: row wrap;
+  justify-content: center;
   margin-bottom: 10vh;
 }
 
@@ -142,6 +143,7 @@ li img {
 
 /* The flip card container - set the width and height to whatever you want. We have added the border property to demonstrate that the flip itself goes out of the box on hover (remove perspective if you don't want the 3D effect */
 .flip-card {
+  font-size: 2em;
   background-color: transparent;
   height: 40vh;
   aspect-ratio: 2/3;
@@ -186,6 +188,7 @@ li img {
   overflow-y: scroll;
 }
 
+
 /* width */
 ::-webkit-scrollbar {
   border-radius: 5px;
@@ -195,7 +198,6 @@ li img {
 /* Track */
 ::-webkit-scrollbar-track {
   border-radius: 5px;
-  background: #f1f1f1; 
 }
  
 /* Handle */

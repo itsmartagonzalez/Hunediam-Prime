@@ -6,13 +6,9 @@ import logging
 import numpy as np
 import pickle
 import pandas as pd
+from getInfoFromMovieIDs import getInfoFromMovieIDs
 
 logger = logging.getLogger(__name__)
-
-numberOfMovies = 50
-
-filenameOfModel = 'trainedModels/svd_trained_model.sav'
-database = "database/test.db"
 
 def generateEstimatedRatingData(user_id, model, ratings):
     for curMovieID in ratings['id_movie']:
@@ -22,6 +18,11 @@ def generateEstimatedRatingData(user_id, model, ratings):
 
 def getRecommendationFromSVD(userId):
   logger.debug('entered into getRecommendationFromSVD')
+  numberOfMovies = 50
+
+  filenameOfModel = 'trainedModels/svd_trained_model.sav'
+  database = "database/test.db"
+
   # connection to database
   databaseConnection = sqlite3.connect(database)
   dbSql = databaseConnection.cursor()
@@ -33,17 +34,19 @@ def getRecommendationFromSVD(userId):
   ''', (userId,)).fetchall()
   notWatchedMovies = pd.DataFrame(notWatchedMovies, columns = ['id_movie'])
 
-  recommendations = []
+  recommendations = ""
   with open(filenameOfModel, 'rb') as svdModel:
     svd = pickle.load(svdModel)
     result = []
     for movieRating in generateEstimatedRatingData(userId, svd, notWatchedMovies):
       result.append(movieRating)
     resultAsPD = pd.DataFrame(result, columns = ['user', 'item', 'r_ui', 'est', 'impossible'])
-    resultAsPD.drop(resultAsPD[resultAsPD.impossible[resultAsPD.was_impossible]].index, inplace=True)
     resultAsPD = resultAsPD.sort_values(by='est', ascending=False)
+    bestMovies = resultAsPD['item'].tolist()[:numberOfMovies]
 
-    logger.debug(resultAsPD)
+    recommendations = getInfoFromMovieIDs(bestMovies)
+
+    logger.debug(bestMovies)
   
   databaseConnection.close()
   return recommendations

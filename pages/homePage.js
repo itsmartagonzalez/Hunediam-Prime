@@ -7,7 +7,7 @@ const rateButton = document.getElementById('rate-more-button')
 const recommendButton = document.getElementById('recommendations-button')
 const header = document.getElementsByClassName('header')[0]
 
-let currentUser = '1';
+let currentUser = '612';
 let movieList = {}
 
 ipcRenderer.on('store-idUser', (event, store) => {
@@ -26,6 +26,7 @@ const checkAmountOfMovies = (sendArgs, movieLista) =>{
   } else {
     const text = document.getElementsByClassName('movies')[0].querySelector('h2')
     text.innerHTML = " It seems like you have not rated any movies...<br>Try rating at least 5 to receive personalized recommendations.";
+    document.getElementsByClassName('movie-container')[0].style.all = 'initial';
   }
 }
 

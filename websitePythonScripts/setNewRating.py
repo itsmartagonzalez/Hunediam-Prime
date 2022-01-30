@@ -29,10 +29,9 @@ def setNewRating(idUser, idMovie, newRating):
       logger.debug('Adding new rating %s for the movie with id: %s for user with id: %s ', newRating, idMovie, idUser)
       dbSql.execute('''INSERT INTO rating(id_user, id_movie, rating) 
                    VALUES(?,?,?) ''',(idUser, idMovie, newRating,)).fetchall()
-      logger.debug("INSERTED: "+str(dbSql.execute('''SELECT * FROM rating WHERE id_user = ? AND id_movie = ?''',(idUser, idMovie,)).fetchall()))        
 
   # closing conection
-  # databaseConnection.commit()
+  databaseConnection.commit()
   databaseConnection.close()
 
 if __name__ == '__main__':
