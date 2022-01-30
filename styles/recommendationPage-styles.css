@@ -40,10 +40,6 @@ body, html {
   align-items: flex-end;
 }
 
-.content {
-  margin-left: auto;
-}
-
 .content h2 {
   display: inline-block;
   text-align: center;
@@ -99,6 +95,7 @@ input[type=submit] {
   background-color: DodgerBlue !important; 
   color: #ffffff; 
 }
+
 
 button {
 	box-shadow: 0px 10px 14px -7px #530400;
