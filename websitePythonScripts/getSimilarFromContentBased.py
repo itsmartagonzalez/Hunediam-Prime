@@ -22,9 +22,27 @@ def getSimilarFromContentBased(*args, **kwargs):
   databaseConnection = sqlite3.connect(database)
   dbSql = databaseConnection.cursor()
 
+  similarToMovies = []
   similarToMoviesRatedAbove = None
   if currentUser != None:
-    similarToMoviesRatedAbove = dbSql.execute('''SELECT movie.id FROM movie INNER JOIN ''')
+    similarToMoviesRatedAbove = dbSql.execute('''
+      SELECT contentBasedSimilar.id_similar_movie as movieID , count(contentBasedSimilar.id_similar_movie) as timesItAppears
+        FROM contentBasedSimilar INNER JOIN rating INNER JOIN movie
+          ON movie.id = rating.id_movie AND contentBasedSimilar.id_movie = movie.id
+          AND rating.id_user = ? AND rating.rating >= ?
+          AND contentBasedSimilar.id_similar_movie NOT IN (
+            SELECT DISTINCT id_movie FROM rating WHERE id_user = ?
+          ) GROUP BY movieID ORDER BY timesItAppears DESC LIMIT 50''', (currentUser, ratingAbove, currentUser,)).fetchall()
+  
+    for simMovieFor in args:
+      simMovie = dbSql.execute('''
+        SELECT DISTINCT id_similar_movie FROM contentBasedSimilar WHERE id_movie = ?
+      ''', (simMovieFor,)).fetchall()
+      similarToMovies.append(simMovie)
+  else:
+    pass
+
+    
 
 
 
@@ -45,4 +63,4 @@ if __name__ == '__main__':
       print(checkUserID(sys.argv[1:])[0][0])
     except Exception as e:
       logger.critical(e)
-    sys.stdout.flush()
+    #sys.stdout.flush()

@@ -1,0 +1,123 @@
+@font-face {
+  font-family: 'Montserrat';
+  src: url('../fonts/Montserrat/Montserrat-VariableFont_wght.ttf');
+}
+
+body, html {
+  font-family: 'Montserrat';
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+.header {
+  height: 10vh;
+  width: 100vw;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  position: fixed;
+  color: white;
+  font-size: 300%;
+  font-weight: bold;
+  padding: 0.5em;
+  background-color: #d73d35;
+}
+
+.autocomplete {
+  margin-top: 18vh;
+  width: 40vh;
+  position: relative;
+  display: flex;
+  margin-left: auto;
+  margin-right: auto;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: flex-end;
+}
+
+.content h2 {
+  display: inline-block;
+  text-align: center;
+  font-size: 150%;
+  color: black;
+  font-weight: bold;
+}
+
+input {
+  border: 1px solid transparent;
+  background-color: #f1f1f1;
+  padding: 10px;
+  font-size: 16px;
+}
+
+input[type=text] {
+  background-color: #f1f1f1;
+  width: 100%;
+}
+
+input[type=submit] {
+  background-color: DodgerBlue;
+  color: #fff;
+  cursor: pointer;
+}
+
+.autocomplete-items {
+  position: absolute;
+  border: 1px solid #d4d4d4;
+  border-bottom: none;
+  border-top: none;
+  z-index: 99;
+  /*position the autocomplete items to be the same width as the container:*/
+  top: 100%;
+  left: 0;
+  right: 0;
+}
+
+.autocomplete-items div {
+  padding: 10px;
+  cursor: pointer;
+  background-color: #fff; 
+  border-bottom: 1px solid #d4d4d4; 
+}
+
+/*when hovering an item:*/
+.autocomplete-items div:hover {
+  background-color: #e9e9e9; 
+}
+
+/*when navigating through the items using the arrow keys:*/
+.autocomplete-active {
+  background-color: DodgerBlue !important; 
+  color: #ffffff; 
+}
+
+
+button {
+	box-shadow: 0px 10px 14px -7px #530400;
+	background-color:#d73d35;
+	border-radius:15px;
+	display:inline-block;
+	cursor:pointer;
+	color:#ffffff;
+	font-family: Montserrat;
+	font-size:50%;
+	font-weight:bold;
+	padding:3% 6%;
+	text-decoration:none;
+	text-shadow:0px 1px 0px #530400;
+  margin: 0em 1em;
+}
+
+button:hover {
+	background-color:rgba(23, 23, 23, 0);
+}
+
+button:active {
+	position:relative;
+	top:1px;
+}

@@ -1,14 +1,15 @@
 const ipcRenderer = require('electron').ipcRenderer
-const {runPython} = require('../websitePythonScripts/runPython.js')
+const { runPython } = require('../websitePythonScripts/runPython.js')
 
 const moviesParent = document.getElementsByClassName('movie-container')[0];
 const welcomeElement = document.getElementsByClassName('sidebar')[0].querySelector('h2')
 const rateButton = document.getElementById('rate-more-button')
 const recommendButton = document.getElementById('recommendations-button')
+const header = document.getElementsByClassName('header')[0]
 
-let currentUser = '1';
+let currentUser = '611';
 
-ipcRenderer.on('store-idUser', (event,store) => {
+ipcRenderer.on('store-idUser', (event, store) => {
   currentUser = store
 });
 
@@ -51,15 +52,29 @@ const createMovieList = (sendArgs, movieLista) => {
   })
 }
 
-const changeToRecommenderPage = () => {
-  console.log("hola")
-  ipcRenderer.send('change-recommendation', currentUser);
-}
-
-console.log(recommendButton)
-welcomeElement.innerHTML = "welcome <br>user " + currentUser
-getMovies(currentUser);
-
 if (recommendButton) {
   recommendButton.addEventListener('click', () => changeToRecommenderPage())
 }
+
+const changeToRecommenderPage = () => {
+  ipcRenderer.send('change-recommendation', currentUser);
+}
+
+if (rateButton) {
+  rateButton.addEventListener('click', () => changeToRatePage())
+}
+
+const changeToRatePage = () => {
+  ipcRenderer.send('change-rate', currentUser);
+}
+
+if (header) {
+  header.addEventListener('click', () => changeToHomePage())
+}
+
+const changeToHomePage = () => {
+  ipcRenderer.send('change-home', currentUser);
+}
+
+welcomeElement.innerHTML = "welcome <br>user " + currentUser;
+getMovies(currentUser);

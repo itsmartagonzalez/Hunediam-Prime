@@ -67,6 +67,18 @@ ipcMain.on('change-recommendation', (event, data)=> {
   })
 })
 
+ipcMain.on('change-rate', (event, data)=> {
+  BrowserWindow.getAllWindows()[0].loadURL(url.format({
+    pathname : path.join(__dirname,'/pages/ratePage.html'),
+    protocol:'file',
+    slashes:true
+  }))
+
+  BrowserWindow.getAllWindows()[0].webContents.on('did-finish-load', () => {
+    BrowserWindow.getAllWindows()[0].webContents.send('store-idUser-toRate', data);
+  })
+})
+
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.

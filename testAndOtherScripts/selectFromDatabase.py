@@ -108,5 +108,16 @@ ratingAbove = 5
 # print(movieTitle)
 # print("Found " + str(len(movieTitle)) + " Results")
 
+
+bestRatedMovies = dbSql.execute('''
+    SELECT DISTINCT movie.id, movie.title, movie.overview, movie.image, avg(rating.rating) as avgR 
+      FROM movie INNER JOIN rating
+        on movie.id = rating.id_movie
+        and movie.overview NOT NULL
+        and movie.image NOT NULL
+        GROUP BY movie.id ORDER BY avgR DESC LIMIT 50''').fetchall()
+
+print(bestRatedMovies)
+
 # closing conection
 databaseConnection.close()

@@ -15,7 +15,7 @@ body, html {
 
 .header {
   height: 10vh;
-  width: 77vw;
+  width: 80vw;
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -59,7 +59,7 @@ body, html {
   font-size: 150%;
   color: black;
   font-weight: bold;
-  word-wrap: break-word;
+  word-wrap: normal;
   text-align: center;
 }
 
@@ -188,4 +188,28 @@ li img {
   background-color: rgb(61, 61, 61);
   color: white;
   transform: rotateY(180deg);
+  padding: 5%;
+  overflow-y: scroll;
+}
+
+/* width */
+::-webkit-scrollbar {
+  border-radius: 5px;
+  width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  border-radius: 5px;
+  background: #f1f1f1; 
+}
+ 
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #555; 
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #555; 
 }

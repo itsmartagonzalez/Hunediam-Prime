@@ -8,7 +8,7 @@ import re
 
 logger = logging.getLogger(__name__)
 
-# movies = array of movie ID
+
 def getRatedMovies(idUser):
   logger.debug('entered into getRatedMovies: %s', idUser)
 
@@ -23,7 +23,7 @@ def getRatedMovies(idUser):
                                     on movie.id = rating.id_movie
                                     AND rating.id_user = ?
                                     AND movie.overview NOT NULL
-                                    AND movie.image NOT NULL LIMIT 30''', (idUser[0],)).fetchall()
+                                    AND movie.image NOT NULL''', (idUser[0],)).fetchall()
 
   # closing conection
   movieInfo = '{"movies" : ['
@@ -39,13 +39,13 @@ def getRatedMovies(idUser):
 
   movieInfo = movieInfo[:-1]
   movieInfo += ']}'
-  logger.warning(movieInfo)
+  logger.debug(movieInfo)
   logger.debug('moviesRated for userID = ' + str(idUser) + ' : ' + str(len(movieInfo)))
   #movieInfo = str(movieInfo)
   return movieInfo
 
 if __name__ == '__main__':
-  logging.basicConfig(level=logging.WARNING, filemode='w', filename='logs/getRatedMovies.log', format='%(name)s - %(levelname)s - %(message)s')
+  logging.basicConfig(level=logging.INFO, filemode='w', filename='logs/getRatedMovies.log', format='%(name)s - %(levelname)s - %(message)s')
   if len(sys.argv) >= 1:
     try:
       logger.debug('In main of getRatedMovies.py, argv: %s', sys.argv)
