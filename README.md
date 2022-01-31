@@ -36,3 +36,8 @@ Ejecutar en local
 ```console
 npm run start
 ```
+
+https://user-images.githubusercontent.com/47786744/151869116-4f4a5c96-38e0-4a4d-976d-86954755ae69.mp4
+
+
+
