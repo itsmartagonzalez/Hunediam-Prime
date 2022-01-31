@@ -55,14 +55,10 @@ const checkAmountOfMovies = (sendArgs, moviesAmount) => {
   moviesParent.innerHTML = '';
   let title = document.createElement("h2");
   if (movieCounter < 5) {
-    let rateButton = document.createElement("button");
     let h2 = document.createElement("h2");
     title.innerHTML = `You have rated ${movieCounter} movies.
                         Try rating at least 5 to receive personalized recommendations.`;
     content.appendChild(title);
-    rateButton.innerHTML = "Rate more Movies";
-    rateButton.id = "rate-button";
-    content.appendChild(rateButton);
     h2.innerHTML = "Nevertheless, here you have the best rated movies of all time.";
     content.appendChild(h2);
     runPython('./websitePythonScripts/getBestRatedMovies.py', [], createMovieList);

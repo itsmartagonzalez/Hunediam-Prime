@@ -1,24 +1,50 @@
 {
   "name": "Hunediam-Prime",
   "version": "1.0.0",
-  "description": "",
+  "description": "Movie Recommendation System",
   "main": "main.js",
   "scripts": {
-    "start": "electron ."
+    "start": "electron .",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/itsmartagonzalez/Hunediam-Prime.git"
   },
   "keywords": [],
-  "author": "",
+  "author": {
+    "name": "Marta Julia González Padrón",
+    "email": "alu0101254487@ull.edu.es"
+  },
+  "contributors": [
+    {
+      "name": "Marta Julia González Padrón",
+      "email": "alu0101254487@ull.edu.es"
+    },
+    {
+      "name": "Vanessa Valentina Villalba Pérez",
+      "email": "alu0101265704@ull.edu.es"
+    },
+    {
+      "name": "Thaddaus Haase",
+      "email": "alu0101016733@ull.edu.es"
+    }
+  ],
+  "build": {
+    "appId": "hunediam.prime.app",
+    "productName": "Hunediam Prime",
+    "linux": {
+      "target": "deb"
+    }
+  },
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/itsmartagonzalez/Hunediam-Prime/issues"
   },
   "homepage": "https://github.com/itsmartagonzalez/Hunediam-Prime#readme",
-  "dependencies": {
-    "@electron/remote": "^2.0.4",
-    "electron": "^16.0.7"
+  "devDependencies": {
+    "electron": "^16.0.7",
+    "electron-builder": "^22.14.5"
   }
 }
